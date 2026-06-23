@@ -1308,6 +1308,85 @@ class ADPWorkforceAdapter(BaseAdapter):
         return AdapterResult(Health(self.company, self.method, status_from(last_code, len(jobs)), len(jobs)), jobs)
 
 
+class SmartRecruitersAdapter(BaseAdapter):
+    method = "requests"
+
+    def __init__(self, company: str, company_slug: str, public_company: str) -> None:
+        self.company = company
+        self.company_slug = company_slug
+        self.public_company = public_company
+
+    def fetch(self, ctx: RunContext) -> AdapterResult:
+        batch: List[Dict[str, Any]] = []
+        last_code: Optional[int] = None
+        for offset in range(0, ctx.limit, 20):
+            params = {"limit": str(min(20, ctx.limit - offset)), "offset": str(offset)}
+            url = f"https://api.smartrecruiters.com/v1/companies/{self.company_slug}/postings?" + urllib.parse.urlencode(params)
+            code, body = http_get(ctx, url, accept="application/json,*/*")
+            last_code = code
+            if code != 200:
+                break
+            data = load_json_body(body)
+            page = data.get("content", []) if isinstance(data, dict) else []
+            if not isinstance(page, list) or not page:
+                break
+            batch.extend(page)
+            if len(batch) >= ctx.limit:
+                break
+            time.sleep(REQUEST_DELAY_SECONDS)
+
+        batch.sort(key=lambda job: str(job.get("releasedDate") or ""), reverse=True)
+        us_batch = [
+            job for job in batch
+            if isinstance(job, dict)
+            and (
+                is_us_text((job.get("location") or {}).get("fullLocation"))
+                or is_us_text((job.get("location") or {}).get("country"))
+            )
+        ]
+        selected = us_batch or [j for j in batch if isinstance(j, dict)]
+
+        seen: set[str] = set()
+        jobs: List[RawJob] = []
+        for job in selected:
+            key = str(job.get("id") or job.get("uuid") or job.get("refNumber") or "")
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            loc = ""
+            if isinstance(job.get("location"), dict):
+                loc = first_text(job["location"].get("fullLocation"), job["location"].get("city"))
+            posted = parse_date(job.get("releasedDate"))
+            desc = html_to_text(str(job.get("jobAd") or ""))
+            raw = RawJob(
+                company=self.company,
+                source_method=self.method,
+                title=first_text(job.get("name")),
+                url=smartrecruiters_public_url(job, self.public_company),
+                job_id=key,
+                requisition_id=str(job.get("refNumber") or ""),
+                location=loc,
+                posted_raw=str(job.get("releasedDate") or ""),
+                posted_date=posted,
+                description=" ".join([first_text(job.get("name")), desc]).strip(),
+                raw=job,
+            )
+            if len(raw.description) < 200 and job.get("id"):
+                detail_url = f"https://api.smartrecruiters.com/v1/companies/{self.company_slug}/postings/{job['id']}"
+                dcode, dbody = http_get(ctx, detail_url, accept="application/json,*/*")
+                if dcode == 200:
+                    detail = load_json_body(dbody)
+                    if isinstance(detail, dict):
+                        raw.description = " ".join([raw.description, html_to_text(str(detail.get("jobAd") or ""))]).strip()
+            if len(raw.description) < 200:
+                enrich_from_html_page(ctx, raw)
+            jobs.append(raw)
+            if len(jobs) >= ctx.limit:
+                break
+
+        return AdapterResult(Health(self.company, self.method, status_from(last_code, len(jobs)), len(jobs)), jobs)
+
+
 def build_adapters() -> List[BaseAdapter]:
     return [
         EightfoldPCSAdapter("Infineon", "https://jobs.infineon.com", "infineon.com", paginate=True),
