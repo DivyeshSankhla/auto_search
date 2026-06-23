@@ -1,0 +1,30 @@
+{
+  "candidate_context": {
+    "student_status": "F1 student",
+    "current_country": "United States",
+    "work_authorization": {
+      "requires_sponsorship": true,
+      "eligible_authorizations": [
+        "OPT",
+        "STEM OPT"
+      ]
+    }
+  },
+  "job_search_preferences": {
+    "target_country": "United States",
+    "target_locations": [
+      "United States",
+      "Remote - US"
+    ],
+    "work_modes": [
+      "onsite",
+      "hybrid",
+      "remote"
+    ],
+    "job_posting_age_days": 4,
+    "employment_types": [
+      "full-time",
+      "contract"
+    ]
+  }
+}
