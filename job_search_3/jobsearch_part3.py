@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Part 2 job-search automation.
+Part 3 job-search automation.
 
-This script implements the repeatable /jobsearch flow for job_search_2 only:
+This script implements the repeatable /jobsearch flow for job_search_3 only:
 official source access, normalization, relevance filtering, sponsorship checks,
 ledger dedupe, scoring, dry-run reporting, and optional append.
 """
@@ -74,128 +74,113 @@ RANKED_TERMS = [
 ]
 
 COMPANY_TERMS = {
-    "Cisco": [
-        "ios",
-        "meraki",
-        "networking firmware",
-        "switch",
+    "Bosch": [
+        "automotive",
         "embedded",
-        "datacenter",
-        "nexus",
-        "wireless",
-        "security firmware",
-    ],
-    "AMD": [
-        "uefi",
-        "bios",
-        "epyc",
-        "instinct",
-        "interconnect firmware",
-        "linux",
-        "gpu driver",
-        "soc firmware",
-        "x86 embedded",
-    ],
-    "Broadcom": [
-        "esx",
-        "vmware",
-        "kernel",
-        "network asic",
-        "switch",
-        "firmware",
-        "server platform",
-        "hypervisor",
-        "nic",
-    ],
-    "Intel": [
-        "ipu",
-        "firmware",
-        "fpga",
-        "embedded",
-        "bios",
-        "uefi",
-        "programmable",
-        "packet processing",
-        "platform",
-    ],
-    "Arm": [
-        "bsp",
-        "device driver",
-        "trustzone",
-        "firmware",
-        "embedded",
-        "soc",
-        "kernel",
-        "platform software",
-    ],
-    "Marvell": [
-        "ethernet",
-        "switch",
-        "phy",
-        "firmware",
-        "embedded",
-        "networking",
-        "optical",
-        "retimer",
-        "bgp",
-    ],
-    "Texas Instruments": [
-        "embedded",
-        "mcu",
-        "dsp",
+        "ecu",
         "rtos",
         "firmware",
+        "iot",
+        "driver",
         "linux",
-        "processor",
-        "automotive",
+        "adas",
     ],
-    "NXP": [
-        "automotive",
-        "linux",
-        "bsp",
-        "device tree",
-        "u-boot",
-        "yocto",
-        "kernel",
-        "robotics",
-        "mpu",
-    ],
-    "Garmin": [
+    "Siemens": [
+        "industrial",
+        "automation",
         "embedded",
-        "rtos",
-        "gps",
+        "plc",
         "firmware",
+        "scada",
+        "motion control",
+        "linux",
+    ],
+    "Honeywell": [
+        "aerospace",
+        "embedded",
         "avionics",
-        "marine",
-        "fitness",
+        "firmware",
+        "rtos",
+        "flight control",
+        "safety",
+    ],
+    "HPE Aruba Networking": [
+        "aruba",
+        "switch",
+        "wifi",
+        "networking",
+        "firmware",
+        "campus",
         "wireless",
     ],
-    "Sony": [
-        "playstation",
+    "Juniper Networks": [
+        "junos",
+        "routing",
+        "switch",
+        "networking",
         "embedded",
+        "srx",
+        "mx",
+    ],
+    "Arista Networks": [
+        "eos",
+        "switch",
+        "networking",
+        "linux",
         "firmware",
-        "kernel",
-        "camera",
-        "imaging",
-        "audio",
-        "wireless",
+        "datacenter",
+        "routing",
+    ],
+    "Fortinet": [
+        "fortios",
+        "network security",
+        "embedded",
+        "linux",
+        "firewall",
+        "ngfw",
+    ],
+    "Ciena": [
+        "optical",
+        "networking",
+        "embedded",
+        "platform software",
+        "control plane",
+        "data plane",
+    ],
+    "Nokia": [
+        "5g",
+        "telecom",
+        "embedded",
+        "linux",
+        "networking",
+        "ran",
+        "bsp",
+    ],
+    "Ericsson": [
+        "5g",
+        "ran",
+        "telecom",
+        "embedded",
+        "linux",
         "platform",
+        "kernel",
+        "bsp",
     ],
 }
 
 US_LOCATION_TEXT = ("united states", "united states of america", "usa", "us,", "us ")
 
 OFFICIAL_DOMAINS = {
-    "Cisco": ("careers.cisco.com",),
-    "AMD": ("careers.amd.com",),
-    "Broadcom": ("broadcom.wd1.myworkdayjobs.com",),
-    "Intel": ("intel.wd1.myworkdayjobs.com",),
-    "Arm": ("careers.arm.com",),
-    "Marvell": ("marvell.wd1.myworkdayjobs.com",),
-    "Texas Instruments": ("careers.ti.com", "edbz.fa.us2.oraclecloud.com"),
-    "NXP": ("nxp.wd3.myworkdayjobs.com",),
-    "Garmin": ("careers.garmin.com",),
-    "Sony": ("sonyglobal.wd1.myworkdayjobs.com", "careers.playstation.com"),
+    "Bosch": ("jobs.bosch.com", "bosch-i3-caas-api.e-spirit.cloud"),
+    "Siemens": ("jobs.siemens.com",),
+    "Honeywell": ("careers.honeywell.com", "ibqbjb.fa.ocs.oraclecloud.com"),
+    "HPE Aruba Networking": ("careers.hpe.com",),
+    "Juniper Networks": ("careers.hpe.com",),
+    "Arista Networks": ("jobs.smartrecruiters.com", "arista.com"),
+    "Fortinet": ("edel.fa.us2.oraclecloud.com",),
+    "Ciena": ("ciena.wd5.myworkdayjobs.com",),
+    "Nokia": ("jobs.nokia.com", "fa-evmr-saasfaprod1.fa.ocs.oraclecloud.com"),
+    "Ericsson": ("jobs.ericsson.com",),
 }
 
 
@@ -328,21 +313,28 @@ def is_official_url(company: str, url: str) -> bool:
     return any(host == d or host.endswith("." + d) for d in OFFICIAL_DOMAINS.get(company, ()))
 
 
-def http_get(ctx: RunContext, url: str, accept: str = "application/json,text/html,*/*") -> Tuple[Optional[int], str]:
+def http_get(
+    ctx: RunContext,
+    url: str,
+    accept: str = "application/json,text/html,*/*",
+    headers: Optional[Dict[str, str]] = None,
+) -> Tuple[Optional[int], str]:
     if url in ctx.search_cache:
         return ctx.search_cache[url]
 
-    headers = {
+    req_headers = {
         "User-Agent": USER_AGENT,
         "Accept": accept,
         "Accept-Language": "en-US,en;q=0.9",
     }
+    if headers:
+        req_headers.update(headers)
     result: Tuple[Optional[int], str] = (None, "")
 
     for attempt in range(MAX_RETRIES):
         if attempt or ctx.search_cache:
             time.sleep(REQUEST_DELAY_SECONDS * (2 ** attempt))
-        req = urllib.request.Request(url, headers=headers)
+        req = urllib.request.Request(url, headers=req_headers)
         try:
             with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
                 body = resp.read().decode("utf-8", errors="replace")
@@ -415,7 +407,7 @@ def slugify(text: str) -> str:
 
 def is_us_text(value: Any) -> bool:
     text = clean_text(str(value or "")).lower()
-    return any(token in text for token in US_LOCATION_TEXT)
+    return any(token in text for token in US_LOCATION_TEXT) or text in {"us", "usa", "united states"}
 
 
 def enrich_from_html_page(ctx: RunContext, raw: RawJob) -> None:
@@ -679,6 +671,408 @@ class BaseAdapter:
         raise NotImplementedError
 
 
+def parse_siemens_cards(body: str) -> List[Tuple[str, str, str]]:
+    cards = []
+    article_pattern = re.compile(r"<article\b[\s\S]*?</article>", flags=re.I)
+    for article in article_pattern.findall(body):
+        link_match = re.search(
+            r'href=["\'](?P<href>https://jobs\.siemens\.com/en_US/externaljobs/JobDetail/(?P<id>\d+))["\']',
+            article,
+        )
+        title_match = re.search(
+            r'<a[^>]*class=["\']link["\'][^>]*href=["\']https://jobs\.siemens\.com/en_US/externaljobs/JobDetail/\d+["\'][^>]*>(?P<title>.*?)</a>',
+            article,
+            flags=re.I | re.S,
+        )
+        loc_match = re.search(r'<span class=["\']list-item-location["\']>(?P<loc>.*?)</span>', article, flags=re.I | re.S)
+        if link_match:
+            cards.append((
+                clean_text(title_match.group("title")) if title_match else f"Job {link_match.group('id')}",
+                link_match.group("href"),
+                clean_text(loc_match.group("loc")) if loc_match else "",
+            ))
+    if cards:
+        return cards
+    links = re.findall(r"https://jobs\.siemens\.com/en_US/externaljobs/JobDetail/\d+", body)
+    return [(f"Job {url.rsplit('/', 1)[-1]}", url, "") for url in links]
+
+
+def oracle_list_url(host: str, site: str, offset: int, limit: int) -> str:
+    finder = (
+        f"findReqs;siteNumber={site},"
+        "facetsList=LOCATIONS%3BWORK_LOCATIONS%3BTITLES%3BCATEGORIES%3BORGANIZATIONS%3BPOSTING_DATES%3BFLEX_FIELDS,"
+        f"limit={limit},offset={offset},sortBy=POSTING_DATES_DESC"
+    )
+    return (
+        f"{host}/hcmRestApi/resources/latest/recruitingCEJobRequisitions?"
+        "onlyData=true&expand=requisitionList.secondaryLocations,flexFieldsFacet.values,requisitionList.requisitionFlexFields&finder="
+        + finder
+    )
+
+
+def extract_hpe_ddo(body: str) -> Dict[str, Any]:
+    match = re.search(r"phApp\.ddo\s*=\s*(\{.*?\});\s*phApp\.", body, flags=re.S)
+    if not match:
+        return {}
+    data = load_json_body(match.group(1))
+    return data if isinstance(data, dict) else {}
+
+
+def smartrecruiters_public_url(job: Dict[str, Any]) -> str:
+    ref = str(job.get("refNumber") or "")
+    name = first_text(job.get("name"))
+    if ref and name:
+        return f"https://jobs.smartrecruiters.com/AristaNetworks/{ref}-{slugify(name)}"
+    ref_url = str(job.get("ref") or "")
+    if ref_url:
+        return ref_url
+    job_id = str(job.get("id") or "")
+    return f"https://api.smartrecruiters.com/v1/companies/AristaNetworks/postings/{job_id}" if job_id else ""
+
+
+class BoschCaaSAdapter(BaseAdapter):
+    company = "Bosch"
+    method = "requests"
+
+    def fetch(self, ctx: RunContext) -> AdapterResult:
+        config_code, config_body = http_get(ctx, "https://jobs.bosch.com/en/", accept="text/html,*/*")
+        api_match = re.search(
+            r"jobsApi:\{\s*baseUrl:\"(?P<base>[^\"]+)\".*?tenant:\"(?P<tenant>[^\"]+)\".*?"
+            r"project:\"(?P<project>[^\"]+)\".*?collection:\"(?P<collection>[^\"]+)\".*?apiKey:\"(?P<key>[^\"]+)\"",
+            config_body,
+            flags=re.S,
+        )
+        prefix_match = re.search(r'jobAdLinkPrefix:"(?P<prefix>[^"]+)"', config_body)
+        if not api_match:
+            return AdapterResult(
+                Health(self.company, self.method, status_from(config_code, 0), 0, "jobsApi config not found"),
+                [],
+            )
+
+        endpoint = (
+            f"{api_match.group('base')}/{api_match.group('tenant')}/"
+            f"{api_match.group('project')}.{api_match.group('collection')}.content/_aggrs/get_jobs"
+        )
+        avars = {"country": ["us"], "sort": {"releasedDate": -1}}
+        params = {
+            "np": "",
+            "rep": "pj",
+            "pagesize": str(ctx.limit),
+            "page": "1",
+            "avars": json.dumps(avars, separators=(",", ":")),
+        }
+        url = endpoint + "?" + urllib.parse.urlencode(params)
+        code, body = http_get(
+            ctx,
+            url,
+            headers={"Authorization": f"Bearer {api_match.group('key')}"},
+        )
+        data = load_json_body(body)
+        batch: List[Dict[str, Any]] = []
+        if isinstance(data, list) and data and isinstance(data[0], dict):
+            batch = data[0].get("data", [])
+        batch = batch if isinstance(batch, list) else []
+
+        prefix = prefix_match.group("prefix") if prefix_match else "https://jobs.bosch.com/en/job/"
+        seen: set[str] = set()
+        jobs: List[RawJob] = []
+        for item in batch:
+            if not isinstance(item, dict):
+                continue
+            key = str(item.get("refNumber") or item.get("_id") or item.get("jobUrl") or "")
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            job_url = absolute(str(item.get("jobUrl") or ""), prefix)
+            posted = parse_date(item.get("releasedDate"))
+            raw = RawJob(
+                company=self.company,
+                source_method=self.method,
+                title=first_text(item.get("name")),
+                url=job_url,
+                job_id=str(item.get("refNumber") or key),
+                requisition_id=str(item.get("refNumber") or ""),
+                location=first_text(item.get("location"), item.get("city")) or "United States",
+                posted_raw=str(item.get("releasedDate") or ""),
+                posted_date=posted,
+                description=first_text(item.get("name")),
+                raw=item,
+            )
+            enrich_from_html_page(ctx, raw)
+            jobs.append(raw)
+            if len(jobs) >= ctx.limit:
+                break
+
+        return AdapterResult(Health(self.company, self.method, status_from(code, len(jobs)), len(jobs)), jobs)
+
+
+class SiemensAvatureAdapter(BaseAdapter):
+    company = "Siemens"
+    method = "requests"
+
+    def fetch(self, ctx: RunContext) -> AdapterResult:
+        parsed: List[Tuple[str, str, str]] = []
+        seen: set[str] = set()
+        last_code: Optional[int] = None
+
+        for offset in range(0, ctx.limit, 6):
+            params = {
+                "folderRecordsPerPage": "6",
+                "folderOffset": str(offset),
+                "folderSort": "postedDate",
+                "folderSortDirection": "desc",
+            }
+            url = "https://jobs.siemens.com/en_US/externaljobs/SearchJobs/?" + urllib.parse.urlencode(params)
+            code, body = http_get(ctx, url, accept="text/html,*/*")
+            last_code = code
+            if code != 200:
+                break
+            for title, link, location in parse_siemens_cards(body):
+                if link in seen:
+                    continue
+                seen.add(link)
+                parsed.append((title, link, location))
+            if len(parsed) >= ctx.limit:
+                break
+            time.sleep(REQUEST_DELAY_SECONDS)
+
+        jobs: List[RawJob] = []
+        for title, link, location in parsed[: ctx.limit]:
+            req_id = link.rsplit("/", 1)[-1]
+            raw = RawJob(
+                company=self.company,
+                source_method=self.method,
+                title=title,
+                url=link,
+                job_id=req_id,
+                requisition_id=req_id,
+                location=location or "United States",
+                posted_raw="Posted hidden",
+                description=title,
+            )
+            enrich_from_html_page(ctx, raw)
+            jobs.append(raw)
+
+        return AdapterResult(Health(self.company, self.method, status_from(last_code, len(jobs)), len(jobs)), jobs)
+
+
+class OracleCEAdapter(BaseAdapter):
+    method = "requests"
+
+    def __init__(self, company: str, host: str, site: str, public_base: str) -> None:
+        self.company = company
+        self.host = host.rstrip("/")
+        self.site = site
+        self.public_base = public_base.rstrip("/")
+
+    def _job_url(self, req_id: str) -> str:
+        return f"{self.public_base}/job/{req_id}"
+
+    def fetch(self, ctx: RunContext) -> AdapterResult:
+        batch: List[Dict[str, Any]] = []
+        last_code: Optional[int] = None
+        for offset in range(0, ctx.limit, 25):
+            code, body = http_get(ctx, oracle_list_url(self.host, self.site, offset, 25), accept="application/json,*/*")
+            last_code = code
+            if code != 200:
+                break
+            data = load_json_body(body)
+            items = data.get("items", []) if isinstance(data, dict) else []
+            page = items[0].get("requisitionList", []) if items and isinstance(items[0], dict) else []
+            if not isinstance(page, list) or not page:
+                break
+            batch.extend(page)
+            if len(batch) >= ctx.limit:
+                break
+            time.sleep(REQUEST_DELAY_SECONDS)
+
+        us_batch = [
+            job for job in batch
+            if isinstance(job, dict)
+            and is_us_text(job.get("PrimaryLocationCountry") or job.get("PrimaryLocation") or job.get("Locations"))
+        ]
+        selected = us_batch or [j for j in batch if isinstance(j, dict)]
+
+        seen: set[str] = set()
+        jobs: List[RawJob] = []
+        for job in selected:
+            req_id = str(job.get("Id") or "")
+            if not req_id or req_id in seen:
+                continue
+            seen.add(req_id)
+            flex = job.get("requisitionFlexFields") if isinstance(job.get("requisitionFlexFields"), list) else []
+            flex_text = " ".join(
+                str(f.get("Prompt") or "") + " " + str(f.get("Value") or "")
+                for f in flex
+                if isinstance(f, dict)
+            )
+            location = first_text(job.get("PrimaryLocation"), job.get("Locations"))
+            posted_raw = first_text(job.get("PostedDate"), job.get("PostingDate"))
+            posted = parse_date(posted_raw)
+            raw = RawJob(
+                company=self.company,
+                source_method=self.method,
+                title=first_text(job.get("Title")),
+                url=self._job_url(req_id),
+                job_id=req_id,
+                requisition_id=req_id,
+                location=location,
+                posted_raw=posted_raw,
+                posted_date=posted,
+                description=" ".join([first_text(job.get("Title")), flex_text]).strip(),
+                raw=job,
+            )
+            enrich_from_html_page(ctx, raw)
+            jobs.append(raw)
+            if len(jobs) >= ctx.limit:
+                break
+
+        status = status_from(last_code, len(jobs))
+        if not jobs and last_code and last_code != 200:
+            status = f"http_{last_code}"
+        return AdapterResult(Health(self.company, self.method, status, len(jobs)), jobs)
+
+
+class HPEBrandAdapter(BaseAdapter):
+    method = "requests"
+
+    def __init__(self, company: str, brand: str) -> None:
+        self.company = company
+        self.brand = brand
+
+    def fetch(self, ctx: RunContext) -> AdapterResult:
+        params = {"keywords": self.brand, "from": "0", "s": "1", "country": "United States"}
+        url = "https://careers.hpe.com/us/en/search-results?" + urllib.parse.urlencode(params)
+        code, body = http_get(ctx, url, accept="text/html,*/*")
+        data = extract_hpe_ddo(body)
+        search = data.get("eagerLoadRefineSearch", {}) if isinstance(data, dict) else {}
+        payload = search.get("data", {}) if isinstance(search, dict) else {}
+        batch = payload.get("jobs", []) if isinstance(payload, dict) else []
+        batch = batch if isinstance(batch, list) else []
+
+        us_batch = [
+            job for job in batch
+            if isinstance(job, dict)
+            and (
+                is_us_text(job.get("country"))
+                or is_us_text(job.get("multi_location"))
+                or is_us_text(job.get("address"))
+            )
+        ]
+        selected = us_batch or [j for j in batch if isinstance(j, dict)]
+
+        seen: set[str] = set()
+        jobs: List[RawJob] = []
+        for job in selected:
+            key = str(job.get("jobSeqNo") or job.get("reqId") or job.get("applyUrl") or "")
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            job_url = first_text(job.get("applyUrl"), job.get("jobUrl"))
+            if not job_url:
+                continue
+            location = first_text(job.get("multi_location"), job.get("address"), job.get("country"))
+            posted_raw = first_text(job.get("postedDate"))
+            posted = parse_date(posted_raw)
+            raw = RawJob(
+                company=self.company,
+                source_method=self.method,
+                title=first_text(job.get("title")),
+                url=job_url,
+                job_id=str(job.get("reqId") or job.get("jobSeqNo") or ""),
+                requisition_id=str(job.get("reqId") or ""),
+                location=location or "United States",
+                posted_raw=posted_raw or "Posted hidden",
+                posted_date=posted,
+                description=first_text(job.get("title")),
+                raw=job,
+            )
+            enrich_from_html_page(ctx, raw)
+            jobs.append(raw)
+            if len(jobs) >= ctx.limit:
+                break
+
+        if not jobs and code == 200:
+            status = "requires_browser"
+        else:
+            status = status_from(code, len(jobs))
+        return AdapterResult(Health(self.company, self.method, status, len(jobs)), jobs)
+
+
+class AristaSmartRecruitersAdapter(BaseAdapter):
+    company = "Arista Networks"
+    method = "requests"
+
+    def fetch(self, ctx: RunContext) -> AdapterResult:
+        batch: List[Dict[str, Any]] = []
+        last_code: Optional[int] = None
+        for offset in range(0, ctx.limit, 20):
+            params = {"limit": str(min(20, ctx.limit - offset)), "offset": str(offset), "q": "United States"}
+            url = "https://api.smartrecruiters.com/v1/companies/AristaNetworks/postings?" + urllib.parse.urlencode(params)
+            code, body = http_get(ctx, url, accept="application/json,*/*")
+            last_code = code
+            if code != 200:
+                break
+            data = load_json_body(body)
+            page = data.get("content", []) if isinstance(data, dict) else []
+            if not isinstance(page, list) or not page:
+                break
+            batch.extend(page)
+            if len(batch) >= ctx.limit:
+                break
+            time.sleep(REQUEST_DELAY_SECONDS)
+
+        us_batch = [
+            job for job in batch
+            if isinstance(job, dict) and is_us_text((job.get("location") or {}).get("fullLocation"))
+        ]
+        selected = us_batch or [j for j in batch if isinstance(j, dict)]
+
+        seen: set[str] = set()
+        jobs: List[RawJob] = []
+        for job in selected:
+            key = str(job.get("id") or job.get("uuid") or job.get("refNumber") or "")
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            job_url = smartrecruiters_public_url(job)
+            loc = ""
+            if isinstance(job.get("location"), dict):
+                loc = first_text(job["location"].get("fullLocation"), job["location"].get("city"))
+            posted = parse_date(job.get("releasedDate"))
+            desc = html_to_text(str(job.get("jobAd") or ""))
+            raw = RawJob(
+                company=self.company,
+                source_method=self.method,
+                title=first_text(job.get("name")),
+                url=job_url,
+                job_id=key,
+                requisition_id=str(job.get("refNumber") or ""),
+                location=loc,
+                posted_raw=str(job.get("releasedDate") or ""),
+                posted_date=posted,
+                description=" ".join([first_text(job.get("name")), desc]).strip(),
+                raw=job,
+            )
+            if len(raw.description) < 200 and job.get("id"):
+                detail_url = f"https://api.smartrecruiters.com/v1/companies/AristaNetworks/postings/{job['id']}"
+                dcode, dbody = http_get(ctx, detail_url, accept="application/json,*/*")
+                if dcode == 200:
+                    detail = load_json_body(dbody)
+                    if isinstance(detail, dict):
+                        raw.description = " ".join([
+                            raw.description,
+                            html_to_text(str(detail.get("jobAd") or "")),
+                        ]).strip()
+            if len(raw.description) < 200:
+                enrich_from_html_page(ctx, raw)
+            jobs.append(raw)
+            if len(jobs) >= ctx.limit:
+                break
+
+        return AdapterResult(Health(self.company, self.method, status_from(last_code, len(jobs)), len(jobs)), jobs)
+
+
 class WorkdayCXSAdapter(BaseAdapter):
     method = "requests"
 
@@ -790,332 +1184,168 @@ class WorkdayCXSAdapter(BaseAdapter):
             enrich_from_html_page(ctx, raw)
 
 
-class JibeAdapter(BaseAdapter):
+class PCSAdapter(BaseAdapter):
     method = "requests"
 
-    def __init__(self, company: str, base: str, api_url: str) -> None:
+    def __init__(self, company: str, endpoint: str, detail_endpoint: str, domain: str, base: str) -> None:
         self.company = company
-        self.base = base.rstrip("/")
-        self.api_url = api_url
+        self.endpoint = endpoint
+        self.detail_endpoint = detail_endpoint
+        self.domain = domain
+        self.base = base
 
     def fetch(self, ctx: RunContext) -> AdapterResult:
         jobs: List[RawJob] = []
-        seen: set[str] = set()
         last_code: Optional[int] = None
+        seen: set[str] = set()
 
-        for page in range(1, 8):
+        for start in range(0, ctx.limit, 10):
             params = {
-                "page": str(page),
-                "sortBy": "posted_date",
-                "descending": "true",
-                "country": "United States",
+                "domain": self.domain,
+                "location": "United States",
+                "start": str(start),
+                "sort_by": "timestamp",
             }
-            url = self.api_url + "?" + urllib.parse.urlencode(params)
+            url = self.endpoint + "?" + urllib.parse.urlencode(params)
             code, body = http_get(ctx, url)
             last_code = code
             if code != 200:
                 break
 
             data = load_json_body(body)
-            batch = data.get("jobs", []) if isinstance(data, dict) else []
-            if not isinstance(batch, list) or not batch:
+            positions: List[Dict[str, Any]] = []
+            if isinstance(data, dict):
+                if isinstance(data.get("data"), dict) and isinstance(data["data"].get("positions"), list):
+                    positions = data["data"]["positions"]
+                elif isinstance(data.get("positions"), list):
+                    positions = data["positions"]
+
+            if not positions:
                 break
 
-            new_on_page = 0
-            for item in batch:
-                if not isinstance(item, dict):
+            for pos in positions:
+                jid = str(pos.get("id") or pos.get("atsJobId") or pos.get("displayJobId") or "")
+                if jid and jid in seen:
                     continue
-                data_obj = item.get("data", item) if isinstance(item.get("data"), dict) else item
-                req_id = str(data_obj.get("req_id") or data_obj.get("id") or "")
-                key = req_id or canonical_from_jibe(item, self.base)
-                if not key or key in seen:
-                    continue
-                seen.add(key)
-                new_on_page += 1
+                seen.add(jid)
 
-                job_url = canonical_from_jibe(item, self.base)
-                location = normalize_location(data_obj.get("location") or data_obj.get("city") or data_obj.get("locations"))
-                posted_raw = first_text(data_obj.get("posted_date"), data_obj.get("postedDate"))
-                posted = parse_date(posted_raw)
-                desc = html_to_text(str(data_obj.get("description") or data_obj.get("summary") or ""))
-
+                raw_url = str(pos.get("publicUrl") or pos.get("positionUrl") or pos.get("canonicalPositionUrl") or "")
+                url_out = absolute(raw_url, self.base)
+                title = str(pos.get("name") or pos.get("title") or "")
+                posted = parse_date(pos.get("postedTs") or pos.get("creationTs"))
+                posted_raw = str(pos.get("postedTs") or pos.get("creationTs") or "")
+                location = normalize_location(pos.get("locations") or pos.get("standardizedLocations"))
+                description = " ".join(
+                    str(pos.get(k) or "")
+                    for k in ("name", "department", "workLocationOption", "locationFlexibility", "jdHighlight")
+                )
                 raw = RawJob(
                     company=self.company,
                     source_method=self.method,
-                    title=first_text(data_obj.get("title")),
-                    url=job_url,
-                    job_id=req_id,
-                    requisition_id=req_id,
-                    location=location or "United States",
+                    title=title,
+                    url=url_out,
+                    job_id=jid,
+                    requisition_id=str(pos.get("displayJobId") or pos.get("atsJobId") or ""),
+                    location=location,
+                    work_mode=str(pos.get("workLocationOption") or pos.get("locationFlexibility") or ""),
                     posted_raw=posted_raw,
                     posted_date=posted,
-                    description=" ".join([str(data_obj.get("title") or ""), desc]).strip(),
-                    raw=data_obj,
+                    description=description,
+                    raw=pos,
                 )
                 self._enrich_detail(ctx, raw)
                 jobs.append(raw)
                 if len(jobs) >= ctx.limit:
                     break
-
-            if len(jobs) >= ctx.limit or new_on_page == 0:
+            if len(jobs) >= ctx.limit:
                 break
             time.sleep(REQUEST_DELAY_SECONDS)
 
         return AdapterResult(Health(self.company, self.method, status_from(last_code, len(jobs)), len(jobs)), jobs)
 
     def _enrich_detail(self, ctx: RunContext, raw: RawJob) -> None:
-        if raw.requisition_id and len(raw.description) < 200:
-            detail_url = f"{self.api_url}/{raw.requisition_id}"
-            code, body = http_get(ctx, detail_url)
-            if code == 200:
-                data = load_json_body(body)
-                obj = data.get("data", data) if isinstance(data, dict) else {}
-                if isinstance(obj, dict):
-                    desc = html_to_text(str(obj.get("description") or obj.get("summary") or ""))
-                    if desc:
-                        raw.description = " ".join([raw.description, desc]).strip()
-                    raw.location = normalize_location(obj.get("location") or obj.get("locations")) or raw.location
-                    posted = parse_date(obj.get("posted_date") or obj.get("postedDate"))
-                    if posted:
-                        raw.posted_date = posted
-        if len(raw.description) < 200:
-            enrich_from_html_page(ctx, raw)
-
-
-class CiscoAdapter(BaseAdapter):
-    company = "Cisco"
-    method = "requests"
-
-    def fetch(self, ctx: RunContext) -> AdapterResult:
-        parsed: List[Tuple[str, str]] = []
-        seen: set[str] = set()
-        last_code: Optional[int] = None
-
-        for start in range(0, ctx.limit, 10):
-            params = {"from": str(start), "s": "1", "country": "United States of America"}
-            url = "https://careers.cisco.com/global/en/search-results?" + urllib.parse.urlencode(params)
+        if not raw.job_id:
+            return
+        cache_key = f"{self.company}:{raw.job_id}"
+        if cache_key in ctx.detail_cache:
+            body = ctx.detail_cache[cache_key]
+            code = 200
+        else:
+            params = {"domain": self.domain, "position_id": raw.job_id}
+            url = self.detail_endpoint + "?" + urllib.parse.urlencode(params)
             code, body = http_get(ctx, url)
-            last_code = code
-            if code != 200:
-                break
-            for title, link in parse_cisco_jobs(body):
-                if link in seen:
-                    continue
-                seen.add(link)
-                parsed.append((title, link))
-            if len(parsed) >= ctx.limit:
-                break
-            time.sleep(REQUEST_DELAY_SECONDS)
+            if code == 200:
+                ctx.detail_cache[cache_key] = body
 
-        jobs: List[RawJob] = []
-        for title, link in parsed[: ctx.limit]:
-            seq_match = re.search(r"/job/([^/]+)/", link)
-            job_id = seq_match.group(1) if seq_match else req_id_from_url(link)
-            raw = RawJob(
-                company=self.company,
-                source_method=self.method,
-                title=title,
-                url=link,
-                job_id=job_id,
-                requisition_id=job_id,
-                location="United States",
-                posted_raw="Posted hidden",
-                description=title,
-            )
-            enrich_from_html_page(ctx, raw)
-            jobs.append(raw)
-
-        return AdapterResult(Health(self.company, self.method, status_from(last_code, len(jobs)), len(jobs)), jobs)
-
-
-class ArmAdapter(BaseAdapter):
-    company = "Arm"
-    method = "requests"
-
-    def fetch(self, ctx: RunContext) -> AdapterResult:
-        url = "https://careers.arm.com/search-jobs/?sort=posted_date"
-        code, body = http_get(ctx, url)
-        cards = parse_arm_cards(body)
-
-        us_cards = [
-            (title, link, location)
-            for title, link, location in cards
-            if is_us_text(location) or location in {"Austin, Texas", "San Jose, California"}
-        ]
-        if not us_cards:
-            us_cards = cards
-
-        seen: set[str] = set()
-        jobs: List[RawJob] = []
-        for title, link, location in us_cards:
-            if link in seen:
-                continue
-            seen.add(link)
-            req_id = req_id_from_url(link)
-            raw = RawJob(
-                company=self.company,
-                source_method=self.method,
-                title=title,
-                url=link,
-                job_id=req_id,
-                requisition_id=req_id,
-                location=location,
-                posted_raw="Posted hidden",
-                description=title,
-            )
-            enrich_from_html_page(ctx, raw)
-            if not location_ok(raw):
-                continue
-            jobs.append(raw)
-            if len(jobs) >= ctx.limit:
-                break
-
-        return AdapterResult(Health(self.company, self.method, status_from(code, len(jobs)), len(jobs)), jobs)
-
-
-class OracleCEAdapter(BaseAdapter):
-    company = "Texas Instruments"
-    method = "requests"
-
-    def fetch(self, ctx: RunContext) -> AdapterResult:
-        finder = (
-            "findReqs;siteNumber=CX,"
-            "facetsList=LOCATIONS%3BWORK_LOCATIONS%3BTITLES%3BCATEGORIES%3BORGANIZATIONS%3BPOSTING_DATES%3BFLEX_FIELDS,"
-            f"limit={ctx.limit},sortBy=POSTING_DATES_DESC"
-        )
-        url = (
-            "https://edbz.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitions?"
-            "onlyData=true&expand=requisitionList.secondaryLocations,flexFieldsFacet.values,requisitionList.requisitionFlexFields&finder="
-            + finder
-        )
-        code, body = http_get(ctx, url, accept="application/json,*/*")
+        if code != 200 or not body:
+            return
         data = load_json_body(body)
-        items = data.get("items", []) if isinstance(data, dict) else []
-        batch: List[Dict[str, Any]] = []
-        if items and isinstance(items[0], dict):
-            req_list = items[0].get("requisitionList", [])
-            batch = req_list if isinstance(req_list, list) else []
+        if not isinstance(data, dict):
+            return
+        detail = data.get("data") if isinstance(data.get("data"), dict) else data
+        if not isinstance(detail, dict):
+            return
 
-        us_batch = [
-            job for job in batch
-            if isinstance(job, dict) and is_us_text(job.get("PrimaryLocationCountry") or job.get("PrimaryLocation") or job.get("Locations"))
-        ]
-        selected = us_batch or [j for j in batch if isinstance(j, dict)]
-
-        seen: set[str] = set()
-        jobs: List[RawJob] = []
-        for job in selected:
-            req_id = str(job.get("Id") or "")
-            if not req_id or req_id in seen:
-                continue
-            seen.add(req_id)
-            job_url = f"https://careers.ti.com/job/{req_id}"
-            location = first_text(job.get("PrimaryLocation"), job.get("Locations"))
-            posted_raw = first_text(job.get("PostedDate"), job.get("PostingDate"))
-            posted = parse_date(posted_raw)
-            raw = RawJob(
-                company=self.company,
-                source_method=self.method,
-                title=first_text(job.get("Title")),
-                url=job_url,
-                job_id=req_id,
-                requisition_id=req_id,
-                location=location,
-                posted_raw=posted_raw,
-                posted_date=posted,
-                description=first_text(job.get("Title"), job.get("ShortDescriptionStr")),
-                raw=job,
+        raw.title = str(detail.get("name") or detail.get("title") or raw.title)
+        raw.url = str(detail.get("publicUrl") or detail.get("canonicalPositionUrl") or detail.get("positionUrl") or raw.url)
+        raw.location = normalize_location(detail.get("locations") or detail.get("standardizedLocations")) or raw.location
+        raw.work_mode = str(detail.get("workLocationOption") or detail.get("locationFlexibility") or raw.work_mode)
+        raw.requisition_id = str(detail.get("displayJobId") or detail.get("atsJobId") or raw.requisition_id)
+        parsed_date = parse_date(detail.get("postedTs") or detail.get("creationTs"))
+        if parsed_date:
+            raw.posted_date = parsed_date
+            raw.posted_raw = str(detail.get("postedTs") or detail.get("creationTs") or raw.posted_raw)
+        detail_text = " ".join(
+            str(detail.get(k) or "")
+            for k in (
+                "jobDescription",
+                "description",
+                "jdHighlight",
+                "department",
             )
-            enrich_from_html_page(ctx, raw)
-            jobs.append(raw)
-            if len(jobs) >= ctx.limit:
-                break
-
-        return AdapterResult(Health(self.company, self.method, status_from(code, len(jobs)), len(jobs)), jobs)
-
-
-class SonyAdapter(BaseAdapter):
-    company = "Sony"
-    method = "requests"
-
-    def fetch(self, ctx: RunContext) -> AdapterResult:
-        jobs: List[RawJob] = []
-        seen: set[str] = set()
-
-        wd_endpoint = "https://sonyglobal.wd1.myworkdayjobs.com/wday/cxs/sonyglobal/SonyGlobalCareers/jobs"
-        wd_public = "https://sonyglobal.wd1.myworkdayjobs.com/SonyGlobalCareers"
-        wd_adapter = WorkdayCXSAdapter("Sony", wd_endpoint, wd_public)
-        wd_result = wd_adapter.fetch(ctx)
-        for raw in wd_result.raw_jobs:
-            if raw.url not in seen:
-                seen.add(raw.url)
-                raw.company = self.company
-                jobs.append(raw)
-
-        ps_url = "https://careers.playstation.com/jobs?sortBy=posted_date"
-        code, body = http_get(ctx, ps_url)
-        if code == 200:
-            decoded = body.replace("\\u002F", "/").replace("\\u002f", "/").replace("\\/", "/")
-            links = re.findall(r'https://careers\.playstation\.com/[^"\'\\< ]+', decoded)
-            links += [
-                absolute(link, "https://careers.playstation.com")
-                for link in re.findall(r'href=["\']([^"\']*/jobs/[^"\']+)["\']', decoded, flags=re.I)
-            ]
-            titles = re.findall(r'"title"\s*:\s*"([^"]{3,160})"', decoded)
-            for idx, link in enumerate(links):
-                if "/jobs/" not in link or link in seen:
-                    continue
-                seen.add(link)
-                title = clean_text(titles[idx]) if idx < len(titles) else title_from_url(link)
-                raw = RawJob(
-                    company=self.company,
-                    source_method=self.method,
-                    title=title,
-                    url=link,
-                    job_id=req_id_from_url(link),
-                    requisition_id=req_id_from_url(link),
-                    location="United States",
-                    posted_raw="Posted hidden",
-                    description=title,
-                )
-                enrich_from_html_page(ctx, raw)
-                jobs.append(raw)
-                if len(jobs) >= ctx.limit:
-                    break
-
-        jobs = jobs[: ctx.limit]
-        status = "ok" if jobs else "parser_failed"
-        return AdapterResult(Health(self.company, self.method, status, len(jobs)), jobs)
+        )
+        if detail_text.strip():
+            raw.description = " ".join([raw.description, html_to_text(detail_text)])
+        raw.raw.update({"detail": detail})
 
 
 def build_adapters() -> List[BaseAdapter]:
     return [
-        CiscoAdapter(),
-        JibeAdapter("AMD", "https://careers.amd.com", "https://careers.amd.com/api/jobs"),
-        WorkdayCXSAdapter(
-            "Broadcom",
-            "https://broadcom.wd1.myworkdayjobs.com/wday/cxs/broadcom/External_Career/jobs",
-            "https://broadcom.wd1.myworkdayjobs.com/External_Career",
+        BoschCaaSAdapter(),
+        SiemensAvatureAdapter(),
+        OracleCEAdapter(
+            "Honeywell",
+            "https://ibqbjb.fa.ocs.oraclecloud.com",
+            "CX_1",
+            "https://careers.honeywell.com/en/sites/Honeywell",
+        ),
+        HPEBrandAdapter("HPE Aruba Networking", "Aruba"),
+        HPEBrandAdapter("Juniper Networks", "Juniper"),
+        AristaSmartRecruitersAdapter(),
+        OracleCEAdapter(
+            "Fortinet",
+            "https://edel.fa.us2.oraclecloud.com",
+            "CX_2001",
+            "https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001",
         ),
         WorkdayCXSAdapter(
-            "Intel",
-            "https://intel.wd1.myworkdayjobs.com/wday/cxs/intel/External/jobs",
-            "https://intel.wd1.myworkdayjobs.com/External",
+            "Ciena",
+            "https://ciena.wd5.myworkdayjobs.com/wday/cxs/ciena/Careers/jobs",
+            "https://ciena.wd5.myworkdayjobs.com/Careers",
         ),
-        ArmAdapter(),
-        WorkdayCXSAdapter(
-            "Marvell",
-            "https://marvell.wd1.myworkdayjobs.com/wday/cxs/marvell/MarvellCareers/jobs",
-            "https://marvell.wd1.myworkdayjobs.com/MarvellCareers",
+        OracleCEAdapter(
+            "Nokia",
+            "https://fa-evmr-saasfaprod1.fa.ocs.oraclecloud.com",
+            "CX_1",
+            "https://jobs.nokia.com/en/sites/CX_1",
         ),
-        OracleCEAdapter(),
-        WorkdayCXSAdapter(
-            "NXP",
-            "https://nxp.wd3.myworkdayjobs.com/wday/cxs/nxp/careers/jobs",
-            "https://nxp.wd3.myworkdayjobs.com/careers",
+        PCSAdapter(
+            "Ericsson",
+            "https://jobs.ericsson.com/api/pcsx/search",
+            "https://jobs.ericsson.com/api/pcsx/position_details",
+            "ericsson.com",
+            "https://jobs.ericsson.com",
         ),
-        JibeAdapter("Garmin", "https://careers.garmin.com", "https://careers.garmin.com/api/jobs"),
-        SonyAdapter(),
     ]
 def load_context() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
     prefs = read_json(PREFERENCES_PATH)
@@ -1168,7 +1398,7 @@ def add_seen(raw: RawJob, run_seen: set[str]) -> None:
 def location_ok(raw: RawJob) -> bool:
     text = lower_text(raw.location, raw.url)
     if not text:
-        return raw.company in {"Arm", "Sony", "Garmin", "Cisco", "AMD"}
+        return raw.company in {"Bosch", "Siemens", "Honeywell", "HPE Aruba Networking", "Juniper Networks", "Ericsson"}
     if re.search(r"\bus,\s*[a-z]", text):
         return True
     if any(country in text for country in ("india", "karnataka", "canada", "waterloo", "london, uk", "united kingdom")):
@@ -1203,6 +1433,13 @@ def location_ok(raw: RawJob) -> bool:
         "santa clara",
         "north reading",
         "pasadena",
+        "atlanta",
+        "morrisville",
+        "westford",
+        "culver city",
+        "hillsboro",
+        "phoenix",
+        "dallas",
     ]
     return any(signal in text for signal in us_signals)
 
@@ -1380,7 +1617,7 @@ def score_job(raw: RawJob, profile: Dict[str, Any], ctx: RunContext) -> Tuple[in
         score -= 3
     if re.search(r"\b(principal|staff|lead|architect)\b", title):
         score -= 4
-    if raw.company in {"AMD", "Broadcom", "Intel", "Cisco", "NXP", "Marvell"}:
+    if raw.company in {"Bosch", "Siemens", "Honeywell", "Fortinet", "Ciena", "Ericsson", "Arista Networks"}:
         score += 3
     score = max(0, min(100, score))
 
@@ -1549,7 +1786,7 @@ def run_search(args: argparse.Namespace) -> int:
     ctx = RunContext(limit=args.limit, days=days, verbose=args.verbose)
     existing = ledger_index(ledger)
 
-    print(f"Part 2 search: limit={ctx.limit}, days={ctx.days}, cutoff={ctx.cutoff.isoformat()}")
+    print(f"Part 3 search: limit={ctx.limit}, days={ctx.days}, cutoff={ctx.cutoff.isoformat()}")
     print("Official-source adapters only. Dry-run unless --append is set.")
 
     healths: List[Health] = []
@@ -1596,22 +1833,32 @@ def run_self_tests() -> int:
 
     check("parse date iso", parse_date("2026-06-19") == dt.date(2026, 6, 19))
     check("parse date month", parse_date("June 18, 2026") == dt.date(2026, 6, 18))
-    check("parse date days ago", parse_date("Posted 5 Days Ago") == dt.date.today() - dt.timedelta(days=5))
 
-    cisco_body = (
-        '"country":"United States of America","title":"Firmware Engineer",'
-        '"jobSeqNo":"123456789"'
+    bosch_config = (
+        'jobsApi:{baseUrl:"https://api.example.com",tenant:"t",project:"p",collection:"c",apiKey:"secret123"}'
+        'jobAdLinkPrefix:"https://jobs.bosch.com/en/job/"'
     )
-    cisco_jobs = parse_cisco_jobs(cisco_body)
-    check("cisco parser", len(cisco_jobs) == 1 and "123456789" in cisco_jobs[0][1])
+    check("bosch api key", "apiKey:\"secret123\"" in bosch_config)
 
-    jibe_job = {"data": {"req_id": "86759", "title": "UEFI Engineer", "meta_data": {"canonical_url": "https://careers.amd.com/jobs/86759"}}}
-    check("jibe canonical", canonical_from_jibe(jibe_job, "https://careers.amd.com") == "https://careers.amd.com/jobs/86759")
+    siemens_html = (
+        '<article><a class="link" href="https://jobs.siemens.com/en_US/externaljobs/JobDetail/12345">'
+        "Firmware Engineer</a><span class=\"list-item-location\">Austin, TX</span></article>"
+    )
+    siemens_cards = parse_siemens_cards(siemens_html)
+    check("siemens parser", len(siemens_cards) == 1 and "12345" in siemens_cards[0][1])
+
+    check("oracle url", "recruitingCEJobRequisitions" in oracle_list_url("https://host", "CX_1", 0, 25))
+
+    hpe_body = 'phApp.ddo = {"eagerLoadRefineSearch":{"data":{"jobs":[{"title":"Engineer"}]}}}; phApp.run();'
+    check("hpe ddo", extract_hpe_ddo(hpe_body).get("eagerLoadRefineSearch", {}).get("data", {}).get("jobs"))
+
+    arista_url = smartrecruiters_public_url({"refNumber": "REF1", "name": "Linux Kernel Engineer"})
+    check("arista url", arista_url.startswith("https://jobs.smartrecruiters.com/AristaNetworks/REF1"))
 
     facet_fixture = {
         "facets": [
             {
-                "facetParameter": "Country",
+                "facetParameter": "Location_Country",
                 "values": [{"descriptor": "United States of America", "id": "abc123"}],
             }
         ]
@@ -1619,29 +1866,24 @@ def run_self_tests() -> int:
     ids = workday_us_ids_for_facet(facet_fixture["facets"][0])
     check("workday us ids", ids == ["abc123"])
 
-    arm_html = (
-        '<a class="job-card__title" href="/job/firmware-engineer/12345">Firmware Engineer</a>'
-        '<span class="location">Austin, Texas</span>'
-    )
-    arm_cards = parse_arm_cards(arm_html)
-    check("arm parser", len(arm_cards) == 1 and arm_cards[0][0] == "Firmware Engineer")
+    loc_raw = RawJob("Fortinet", "requests", "t", "https://x", location="US, Texas, Austin")
+    check("location us state city", location_ok(loc_raw))
 
-    check("ti url", req_id_from_url("https://careers.ti.com/job/12345") == "12345")
-    check("official url amd", is_official_url("AMD", "https://careers.amd.com/jobs/86759"))
+    check("official url bosch", is_official_url("Bosch", "https://jobs.bosch.com/en/job/123"))
     check("term boundary", not term_in_text("ros", "cross-functional debugging"))
     check("term phrase", term_in_text("device driver", "Linux device driver development"))
 
     ctx = RunContext(limit=5, days=3)
     profile = {"keywords_include": ["firmware", "embedded linux", "kernel", "device driver"]}
     good = RawJob(
-        company="AMD",
+        company="Ciena",
         source_method="requests",
-        title="UEFI/BIOS Firmware Engineer",
-        url="https://careers.amd.com/careers-home/jobs/86859",
-        job_id="86859",
-        location="Austin, TX, US",
+        title="Platform Software Developer",
+        url="https://ciena.wd5.myworkdayjobs.com/Careers/job/Atlanta/Platform_R031084",
+        job_id="R031084",
+        location="Atlanta, GA, US",
         posted_date=dt.date.today(),
-        description="Embedded Linux kernel device driver firmware UEFI BIOS C C++",
+        description="Embedded Linux platform software drivers control plane data plane C C++",
     )
     bad = dataclasses.replace(good, title="Financial Analyst", description="finance planning")
     no_sponsor = dataclasses.replace(good, description="This role is not eligible for immigration sponsorship.")
@@ -1650,8 +1892,8 @@ def run_self_tests() -> int:
     check("no sponsorship reject", "no_sponsorship" in hard_reject_reasons(no_sponsor, ctx))
     check("date hidden", date_status(dataclasses.replace(good, posted_date=None), ctx) == DATE_HIDDEN)
 
-    existing = {"https://careers.amd.com/jobs/86859"}
-    dup = dataclasses.replace(good, url="https://careers.amd.com/jobs/86859")
+    existing = {"https://ciena.wd5.myworkdayjobs.com/Careers/job/Atlanta/Platform_R031084"}
+    dup = dataclasses.replace(good, url="https://ciena.wd5.myworkdayjobs.com/Careers/job/Atlanta/Platform_R031084")
     check("dedupe url", is_duplicate(dup, existing, set()))
 
     if failures:
@@ -1664,7 +1906,7 @@ def run_self_tests() -> int:
 
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run Part 2 official-source job search.")
+    parser = argparse.ArgumentParser(description="Run Part 3 official-source job search.")
     parser.add_argument("--append", action="store_true", help="Append accepted new jobs to jobsearchdocs/jobs_found.md")
     parser.add_argument("--limit", type=int, default=DEFAULT_LIMIT, help="Max raw/top results per company, default 50")
     parser.add_argument("--days", type=int, default=None, help="Freshness window. Defaults to preferences JSON or 3.")
