@@ -1507,6 +1507,32 @@ def location_ok(raw: RawJob) -> bool:
     return any(signal in text for signal in us_signals)
 
 
+SENIOR_TITLE_PATTERNS = (
+    r"\bprincipal\b",
+    r"\bstaff\b",
+    r"\blead\b",
+    r"\barchitect\b",
+    r"\bdistinguished\b",
+    r"\bfellow\b",
+    r"\bmanager\b",
+    r"\bdirector\b",
+    r"\bhead of\b",
+    r"\bvp\b",
+    r"\bv\.?p\.?\b",
+    r"\bvice president\b",
+)
+
+
+def is_new_grad_title(title: str) -> bool:
+    return bool(re.search(r"\bgrad\b", title or "", flags=re.I))
+
+
+def title_exceeds_experience_level(title: str) -> bool:
+    if is_new_grad_title(title):
+        return False
+    return any(re.search(p, title or "", flags=re.I) for p in SENIOR_TITLE_PATTERNS)
+
+
 def hard_reject_reasons(raw: RawJob, ctx: RunContext) -> List[str]:
     text = lower_text(raw.title, raw.location, raw.work_mode, raw.employment_type, raw.description)
     reasons: List[str] = []
@@ -1574,6 +1600,9 @@ def hard_reject_reasons(raw: RawJob, ctx: RunContext) -> List[str]:
     ]
     if any(bad in text for bad in role_bad):
         reasons.append("non_target_role_family")
+
+    if title_exceeds_experience_level(raw.title):
+        reasons.append("experience_level_high")
 
     return sorted(set(reasons))
 
@@ -1961,6 +1990,13 @@ def run_self_tests() -> int:
     check("good role not weak", not weak_role_match(good, profile))
     check("bad role weak", weak_role_match(bad, profile))
     check("no sponsorship reject", "no_sponsorship" in hard_reject_reasons(no_sponsor, ctx))
+    check("grad bypass staff title", not title_exceeds_experience_level("New Grad Staff Engineer"))
+    check("staff title filtered", title_exceeds_experience_level("Staff Firmware Engineer"))
+    check("experience level reject", "experience_level_high" in hard_reject_reasons(
+        dataclasses.replace(good, title="Principal Firmware Engineer"), ctx))
+    check("grad bypass not rejected", "experience_level_high" not in hard_reject_reasons(
+        dataclasses.replace(good, title="New Grad Software Engineer"), ctx))
+
     check("date hidden", date_status(dataclasses.replace(good, posted_date=None), ctx) == DATE_HIDDEN)
 
     existing = {"https://irobot.wd503.myworkdayjobs.com/iRobot/job/Bedford/Embedded-Firmware_R123"}

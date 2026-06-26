@@ -1,0 +1,34 @@
+# command: /usr/bin/python3 /home/divyesh/job_hunt/auto_search/job_search_10/jobsearch_part10.py --days 2 --limit 100 --append
+# exit_code: 0
+
+Part 10 search: limit=100, days=2, cutoff=2026-06-23
+Official-source adapters only. Dry-run unless --append is set.
+
+Source health
+Company     | Method     | Status             | Count | Note
+------------+------------+--------------------+-------+------------------------------
+Wabtec      | requests   | ok                 |    72 | 
+Resideo     | requests   | ok                 |    53 | 
+Brivo       | requests   | ok                 |    12 | 
+Wyze        | requests   | ok                 |     9 | 
+GoPro       | requests   | ok                 |     1 | 
+
+New confirmed_recent jobs
+None
+
+New posted_hidden_top_results jobs
+None
+
+Rejected
+- non_target_role_family: 98
+- old_posting: 91
+- location_mismatch: 43
+- experience_level_high: 42
+- duplicate_ledger: 14
+- no_sponsorship: 4
+- weak_role_match: 3
+- internship: 2
+
+Raw jobs: 147 | Accepted: 0 | Duplicates skipped: 14
+
+Append skipped: no new jobs after final ledger re-read.

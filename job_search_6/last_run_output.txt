@@ -1,0 +1,42 @@
+# command: /usr/bin/python3 /home/divyesh/job_hunt/auto_search/job_search_6/jobsearch_part6.py --days 2 --limit 100 --append
+# exit_code: 0
+
+Part 6 search: limit=100, days=2, cutoff=2026-06-23
+Official-source adapters only. Dry-run unless --append is set.
+
+Source health
+Company     | Method     | Status             | Count | Note
+------------+------------+--------------------+-------+------------------------------
+Torc Robotics | requests   | ok                 |    55 | 
+Applied Intuition | requests   | ok                 |   100 | 
+Aurora      | requests   | ok                 |   100 | 
+Skydio      | requests   | ok                 |   100 | 
+Boston Dynamics | requests   | ok                 |    34 | 
+Symbotic    | requests   | ok                 |   100 | 
+Zipline     | requests   | ok                 |   100 | 
+Figure AI   | requests   | ok                 |   100 | 
+Agility Robotics | requests   | ok                 |    40 | 
+Waabi       | requests   | ok                 |    60 | 
+
+New confirmed_recent jobs
+None
+
+New posted_hidden_top_results jobs
+None
+
+Rejected
+- old_posting: 634
+- non_target_role_family: 465
+- experience_level_high: 248
+- duplicate_ledger: 110
+- location_mismatch: 37
+- internship: 35
+- citizenship_required: 24
+- clearance_required: 12
+- part_time: 4
+- weak_role_match: 2
+- no_sponsorship: 1
+
+Raw jobs: 789 | Accepted: 0 | Duplicates skipped: 110
+
+Append skipped: no new jobs after final ledger re-read.

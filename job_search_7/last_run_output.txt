@@ -1,0 +1,41 @@
+# command: /usr/bin/python3 /home/divyesh/job_hunt/auto_search/job_search_7/jobsearch_part7.py --days 2 --limit 100 --append
+# exit_code: 0
+
+Part 7 search: limit=100, days=2, cutoff=2026-06-23
+Official-source adapters only. Dry-run unless --append is set.
+
+Source health
+Company     | Method     | Status             | Count | Note
+------------+------------+--------------------+-------+------------------------------
+Nuro        | requests   | ok                 |   100 | 
+Kodiak Robotics | requests   | ok                 |    61 | 
+Gatik       | requests   | ok                 |    57 | 
+May Mobility | requests   | ok                 |    43 | 
+Avride      | requests   | ok                 |    40 | 
+Serve Robotics | requests   | ok                 |    44 | 
+Gecko Robotics | requests   | ok                 |    18 | 
+Skild AI    | requests   | ok                 |    16 | 
+Motorola Solutions / Avigilon | requests   | ok                 |    40 | 
+Zebra Technologies | requests   | ok                 |    40 | 
+
+New confirmed_recent jobs
+None
+
+New posted_hidden_top_results jobs
+None
+
+Rejected
+- non_target_role_family: 342
+- old_posting: 342
+- experience_level_high: 140
+- location_mismatch: 61
+- duplicate_ledger: 48
+- citizenship_required: 10
+- no_sponsorship: 8
+- part_time: 7
+- clearance_required: 7
+- internship: 4
+
+Raw jobs: 459 | Accepted: 0 | Duplicates skipped: 48
+
+Append skipped: no new jobs after final ledger re-read.

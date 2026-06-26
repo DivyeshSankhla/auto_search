@@ -1,0 +1,64 @@
+# command: /usr/bin/python3 /home/divyesh/job_hunt/auto_search/job_search_general/job_search_general.py --days 2 --limit 100 --append
+# exit_code: 0
+
+General job search: query='embedded software engineer', limit=100, days=2, cutoff=2026-06-23
+Site adapters. Dry-run unless --append is set.
+
+Source health
+Site        | Method     | Status             | Count | Note
+------------+------------+--------------------+-------+------------------------------
+LinkedIn    | curl_cffi  | ok                 |    59 | 
+Indeed      | curl_cffi  | ok                 |    90 | 
+Dice        | curl_cffi  | ok                 |    40 | 
+Built In    | curl_cffi  | ok                 |    25 | 
+SimplyHired | curl_cffi  | ok                 |    20 | 
+RemoteOK    | requests   | ok                 |     2 | 
+We Work Remotely | requests   | ok                 |    24 | 
+Remotive    | requests   | ok                 |    28 | 
+Hacker News Who's Hiring | requests   | ok                 |   100 | 
+Glassdoor   | curl_cffi  | parser_failed      |     0 | 
+ZipRecruiter | curl_cffi  | ok                 |    20 | 
+Wellfound   | playwright | blocked            |     0 | 
+Monster     | playwright | blocked            |     0 | DataDome/blocked
+Otta        | playwright | parser_failed      |     0 | 
+
+New confirmed_recent jobs
+1. [90] LinkedIn - Embedded SW Engineer
+   United States | Onsite/unclear | 2026-06-23 | confirmed_recent
+   https://www.linkedin.com/jobs/view/firmware-engineer-at-cubit-capital-4431424016
+   Matches firmware, embedded software, operating systems, robotics, rtos, systems, hardware bring-up, i2c
+   Concerns: None visible
+2. [84] Built In - Embedded Linux Software Engineer
+   United States | Remote | 2026-06-24 | confirmed_recent
+   https://builtin.com/job/embedded-linux-software-engineer/9883089
+   Matches embedded linux, systems software, operating systems, systems, linux, security
+   Concerns: sponsorship not visible
+3. [72] Lemon.io - Senior DevOps Engineer
+   Remote | Remote | 2026-06-24 | confirmed_recent
+   https://remoteOK.com/remote-jobs/remote-senior-devops-engineer-lemon-io-1134015
+   Matches embedded software, c++, platform
+   Concerns: seniority may be high
+
+New posted_hidden_top_results jobs
+1. [72] We Work Remotely - POS+: Full-Stack JavaScript Engineer (Remote - LATAM or Europe)
+   Remote | Remote | Posted hidden | posted_hidden_top_results
+   https://weworkremotely.com/remote-jobs/pos-full-stack-javascript-engineer-remote-latam-or-europe
+   Matches systems, memory management, platform, autonomy, synchronization, security
+   Concerns: sponsorship not visible; posting date hidden
+
+Rejected
+- non_target_role_family: 193
+- old_posting: 166
+- weak_role_match: 84
+- experience_level_high: 63
+- duplicate_ledger: 60
+- clearance_required: 53
+- internship: 35
+- part_time: 34
+- citizenship_required: 15
+- low_score: 8
+- no_sponsorship: 5
+
+Raw jobs: 408 | Accepted: 4 | Duplicates skipped: 60
+
+Appended 1 jobs to /home/divyesh/job_hunt/auto_search/job_search_general/../jobsearchdocs/jobs_found.md

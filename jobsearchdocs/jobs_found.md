@@ -369,3 +369,238 @@ Future `/jobsearch` runs should append only new, non-duplicate jobs here.
 | Senior Inference Engineer, AIConfigurator for Dynamo | NVIDIA | US, CA, Santa Clara; US, CA, Remote | remote_local | 2026-06-12 | 72 | JR2019734 | https://jobs.nvidia.com/careers/job/893395609117 | Matches performance, systems, platform | sponsorship not visible; seniority may be high |
 | Software Engineer II & Senior Software Engineer | Microsoft | United States, Washington, Redmond | onsite | 2026-06-16 | 72 | 200040312 | https://apply.careers.microsoft.com/careers/job/1970393556874926 | Matches c++, systems, platform, security | sponsorship not visible; seniority may be high; authorization/export-control language needs review |
 | >Senior Software Engineer, Pixel Audio, Embedded Systems, Firmware <div class= | Google | United States | Onsite/unclear | Posted hidden (posted_hidden_top_results) | 72 | 137712338932245190 | https://www.google.com/about/careers/applications/jobs/results/137712338932245190 | Matches firmware, pixel, systems | sponsorship not visible; posting date hidden; seniority may be high |
+
+## Run: 2026-06-23 21:39
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Senior Software Engineer, AI Storage | NVIDIA | US, CA, Santa Clara; Remote - US | remote_local | 2026-06-22 | 87 | JR2014785 | https://jobs.nvidia.com/careers/job/893394033568 | Matches linux kernel, kernel, performance, c++, systems, linux, cuda, security | sponsorship not visible; seniority may be high |
+| Senior Machine Learning Software Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-22 | 84 | 3092964 | https://careers.qualcomm.com/careers/job/446719157414 | Matches embedded software, operating systems, performance, c++, systems, camera, security | sponsorship not visible; seniority may be high |
+| Senior Software Engineer, PyTorch - Deep Learning | NVIDIA | US, CA, Santa Clara; US, CA, Remote; US, NC, Remote; US, NY, Remote | remote_local | 2026-06-22 | 81 | JR2008549 | https://jobs.nvidia.com/careers/job/893392196919 | Matches systems software, performance, c++, systems, platform, cuda | sponsorship not visible; seniority may be high |
+| System Software Engineer, Distributed Systems | NVIDIA | US, CA, Santa Clara | onsite | 2026-06-23 | 78 | JR2013472 | https://jobs.nvidia.com/careers/job/893393494431 | Matches system software, performance, systems, linux | sponsorship not visible |
+| Senior Security Engineer | NVIDIA | US, CA, Remote; US, NY, Remote | remote_local | 2026-06-23 | 78 | JR2020115 | https://jobs.nvidia.com/careers/job/893395777697 | Matches performance, systems, platform, streaming, security | sponsorship not visible; seniority may be high |
+| Data Engineer II - Getting Customers Ready for AI | Microsoft | United States, Washington, Redmond | onsite | 2026-06-22 | 78 | 200040518 | https://apply.careers.microsoft.com/careers/job/1970393556875702 | Matches performance, c++, systems, platform, streaming, security | sponsorship not visible; authorization/export-control language needs review |
+| Senior Auto Algorithm Development Engineer | Qualcomm | Novi, Michigan, United States of America | onsite | 2026-06-23 | 78 | 3093030 | https://careers.qualcomm.com/careers/job/446719176492 | Matches performance, robotics, c++, systems, security | sponsorship not visible; seniority may be high |
+| Senior ADAS R&D Systems Engineer | Qualcomm | Santa Clara, California, United States of America | onsite | 2026-06-22 | 78 | 3092966 | https://careers.qualcomm.com/careers/job/446719157759 | Matches robotics, systems, synchronization, camera, security | sponsorship not visible; seniority may be high |
+| Senior ASIC Verification Engineer | NVIDIA | US, TX, Austin; US, CA, Santa Clara | onsite | 2026-06-23 | 75 | JR2005437 | https://jobs.nvidia.com/careers/job/893391699603 | Matches firmware, performance, soc, platform | sponsorship not visible; seniority may be high |
+| Senior Software Engineer, Agentic Systems | NVIDIA | US, CA, Santa Clara; US, CO, Remote; US, NY, Remote; US, WA, Remote; US, MA, Remote | remote_local | 2026-06-22 | 75 | JR2018875 | https://jobs.nvidia.com/careers/job/893395306067 | Matches performance, systems, platform, security | sponsorship not visible; seniority may be high |
+| Senior Software Engineer | Microsoft | United States, Washington, Redmond | onsite | 2026-06-23 | 75 | 200041331 | https://apply.careers.microsoft.com/careers/job/1970393556913149 | Matches performance, c++, systems, platform, security | sponsorship not visible; seniority may be high |
+| Software Engineer II - Azure Resource Graph | Microsoft | United States, Multiple Locations, Multiple Locations | onsite | 2026-06-23 | 75 | 200031838 | https://apply.careers.microsoft.com/careers/job/1970393556847405 | Matches performance, c++, systems, platform, security | sponsorship not visible; authorization/export-control language needs review |
+| Senior Software Engineer - Performance Tooling | Microsoft | United States, Washington, Redmond; United States, California, Mountain View | onsite | 2026-06-22 | 75 | 200033507 | https://apply.careers.microsoft.com/careers/job/1970393556853720 | Matches performance, c++, systems, cuda, security | sponsorship not visible; seniority may be high; authorization/export-control language needs review |
+| Senior Camera Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-23 | 75 | 3093028 | https://careers.qualcomm.com/careers/job/446719176480 | Matches performance, systems, camera, security | sponsorship not visible; seniority may be high |
+| Senior Camera Engineer | Qualcomm | Santa Clara, California, United States of America | onsite | 2026-06-23 | 75 | 3093038 | https://careers.qualcomm.com/careers/job/446719176802 | Matches performance, systems, camera, security | sponsorship not visible; seniority may be high |
+| Video Codec Hardware Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-22 | 75 | 3092974 | https://careers.qualcomm.com/careers/job/446719158333 | Matches firmware, systems, memory management, security | sponsorship not visible |
+| Senior Software Engineer, Resilience Engineering - DGX Cloud | NVIDIA | US, CA, Santa Clara; Remote - US | remote_local | 2026-06-23 | 72 | JR2019933 | https://jobs.nvidia.com/careers/job/893395657436 | Matches operating systems, systems, platform | sponsorship not visible; seniority may be high |
+| Senior Cloud Operations Engineer | NVIDIA | US, CA, Santa Clara; US, TX, Austin | onsite | 2026-06-22 | 72 | JR2008645 | https://jobs.nvidia.com/careers/job/893392313870 | Matches performance, systems, security | sponsorship not visible; seniority may be high |
+| CPU Design Engineer - New College Grad 2026 | NVIDIA | US, OR, Hillsboro; US, TX, Remote; US, NC, Durham; US, CA, Remote; US, CA, Santa Clara; US, MA, Remote | remote_local | 2026-06-22 | 72 | JR2007624 | https://jobs.nvidia.com/careers/job/893391950885 | Matches performance, systems, platform | sponsorship not visible |
+| AI Engineer II & Senior AI Engineer - Getting Customers Ready for AI | Microsoft | United States, Washington, Redmond | onsite | 2026-06-22 | 72 | 200041047 | https://apply.careers.microsoft.com/careers/job/1970393556899615 | Matches performance, c++, systems, security | sponsorship not visible; seniority may be high; authorization/export-control language needs review |
+| Senior Security Engineer - Getting Customers Ready for AI | Microsoft | United States, Washington, Redmond | onsite | 2026-06-22 | 72 | 200040509 | https://apply.careers.microsoft.com/careers/job/1970393556875675 | Matches performance, systems, platform, security | sponsorship not visible; seniority may be high; authorization/export-control language needs review |
+| Software Engineer II - CoreAI | Microsoft | United States, Washington, Redmond | onsite | 2026-06-22 | 72 | 200020076 | https://apply.careers.microsoft.com/careers/job/1970393556657543 | Matches performance, c++, systems, security | sponsorship not visible; authorization/export-control language needs review |
+| Senior Software Engineer - AI Frameworks | Microsoft | United States, Washington, Redmond; United States, California, Mountain View | onsite | 2026-06-17 | 72 | 200034334 | https://apply.careers.microsoft.com/careers/job/1970393556857279 | Matches kernel, c++, systems, cuda | sponsorship not visible; seniority may be high |
+| Senior Modem Technologies Software Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-23 | 72 | 3093027 | https://careers.qualcomm.com/careers/job/446719176175 | Matches performance, systems, security | sponsorship not visible; seniority may be high |
+| Senior Localization Systems Engineer | Qualcomm | Novi, Michigan, United States of America | onsite | 2026-06-23 | 72 | 3093032 | https://careers.qualcomm.com/careers/job/446719176569 | Matches c++, systems, security | sponsorship not visible; seniority may be high |
+| Senior IT Software Developer - Applications & Platforms | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-22 | 72 | 3092970 | https://careers.qualcomm.com/careers/job/446719158021 | Matches performance, systems, security | sponsorship not visible; seniority may be high |
+| Senior Camera Software Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-22 | 72 | 3092975 | https://careers.qualcomm.com/careers/job/446719158317 | Matches systems, camera, security | sponsorship not visible; seniority may be high |
+
+## Run: 2026-06-23 21:49
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Software Engineer VMkernel | Broadcom | USA-CA - Promontory B | Onsite/unclear | 2026-06-17 | 90 | R026222 | https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA---Promontory-B/Software-Engineer-VMkernel_R026222 | Matches systems software, operating systems, performance, c++, vmware, systems, linux, memory management | sponsorship not visible |
+| Integration Engineer - Perception and Platform | AMD | San Jose | Hybrid | 2026-06-17 | 87 | 86994 | https://careers.amd.com/jobs/86994?lang=en-us | Matches linux kernel, kernel, device drivers, platform software, performance, robotics, c++, linux | sponsorship not visible |
+| Software Engineer | Broadcom | USA-CA Irvine Alton Parkway Bldg 1 | Onsite/unclear | 2026-06-16 | 87 | R026019 | https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA-Irvine-Alton-Parkway-Bldg-1/Software-Engineer_R026019 | Matches firmware, linux kernel, kernel, device driver, device drivers, networking, connectivity, uefi | sponsorship not visible |
+| Senior Firmware Engineer - Fibre Channel/NVME Networked-Storage | Broadcom | USA-CA Irvine Alton Parkway Bldg 1 | Onsite/unclear | 2026-06-16 | 84 | R025913 | https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA-Irvine-Alton-Parkway-Bldg-1/R-D-Firmware-Engineer-3_R025913 | Matches firmware, networking, connectivity, systems, linux | sponsorship not visible; seniority may be high |
+| R&D Engineer Software | Broadcom | USA-CA - Promontory B | Onsite/unclear | Posted 30+ Days Ago (posted_hidden_top_results) | 81 | R024999 | https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA---Promontory-B/Software-Engineer---Windows-Linux-Graphics-Driver_R024999 | Matches kernel, device drivers, system software, operating systems, performance, vmware, systems, linux | sponsorship not visible; posting date hidden |
+| AI Systems Performance Engineer | Broadcom | USA-CA San Jose Innovation Drive | Remote | Posted 30+ Days Ago (posted_hidden_top_results) | 78 | R025748 | https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA-San-Jose-Innovation-Drive/AI-Systems-Performance-Engineer_R025748 | Matches operating systems, networking, performance, c++, switch, systems, linux | sponsorship not visible; posting date hidden |
+| Post-Training Platform Infrastructure Engineer | AMD | San Jose | Hybrid | 2026-06-16 | 75 | 78472 | https://careers.amd.com/jobs/78472?lang=en-us | Matches performance, c++, systems, platform | sponsorship not visible |
+| Firmware Engineer | Broadcom | USA-CA Irvine Alton Parkway Bldg 2 | Onsite/unclear | Posted 30+ Days Ago (posted_hidden_top_results) | 75 | R025866 | https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA-Irvine-Alton-Parkway-Bldg-2/Firmware-Engineer_R025866 | Matches firmware, c++, systems, linux, i2c | sponsorship not visible; posting date hidden |
+| Hardware Engineer 5 | Broadcom | USA-CA San Jose Innovation Drive | Onsite/unclear | 2026-06-11 | 72 | R026209 | https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA-San-Jose-Innovation-Drive/Hardware-Engineer-5_R026209 | Matches networking, switch, i2c | sponsorship not visible |
+| Senior IP Project Engineer | NXP | Austin (Oakhill, Office) | Onsite/unclear | 2026-06-09 | 72 | R-10063876 | https://nxp.wd3.myworkdayjobs.com/careers/job/Austin-Oakhill-Office/Senior-IP-Project-Engineer_R-10063876 | Matches networking, automotive, security | sponsorship not visible; seniority may be high |
+| Senior NVM Validation Engineer | NXP | Austin (Oakhill, Office) | Onsite/unclear | 2026-06-09 | 72 | R-10063714 | https://nxp.wd3.myworkdayjobs.com/careers/job/Austin-Oakhill-Office/Senior-NVM-Validation-Engineer_R-10063714 | Matches performance, automotive, security | sponsorship not visible; seniority may be high |
+| R&D Applications Engineer, Emulex Connectivity Division (ECD) | Broadcom | USA-CA Irvine Alton Parkway Bldg 1 | Onsite/unclear | Posted 30+ Days Ago (posted_hidden_top_results) | 72 | R026001 | https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA-Irvine-Alton-Parkway-Bldg-1/Software-Program-Manager--Emulex-Connectivity-Division--ECD-_R026001 | Matches firmware, embedded software, networking, connectivity | sponsorship not visible; posting date hidden |
+
+## Run: 2026-06-23 22:12
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Embedded Systems Platform Software Engineer | Nokia | United States | Onsite/unclear | 2026-06-22 | 78 | 37823 | https://jobs.nokia.com/en/sites/CX_1/job/37823 | Matches platform software, embedded, systems, platform | sponsorship not visible |
+| Cloud RAN Integration Engineer | Ericsson | Plano,Texas,United States | onsite | 2026-06-17 | 78 | 785730 | https://jobs.ericsson.com/careers/job/563121776123218 | Matches performance, 5g, ran, security | None visible |
+| Operation Specialist | Ericsson | Plano,Texas,United States | onsite | 2026-06-15 | 78 | 782188 | https://jobs.ericsson.com/careers/job/563121775132669 | Matches performance, telecom, systems, security | None visible |
+
+## Run: 2026-06-23 22:26
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Sr Software Design Assurance Engineer | Dexcom | San Diego, California | Onsite/unclear | 2026-06-15 | 87 | JR119114 | https://dexcom.wd1.myworkdayjobs.com/Dexcom/job/San-Diego-California/Sr-Software-Design-Assurance-Engineer_JR119114 | Matches firmware, embedded software, operating systems, performance, rtos, cgm, glucose, wearable | sponsorship not visible |
+
+## Run: 2026-06-23 22:29
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| HVAC Controls Application Engineer | Johnson Controls | Indianapolis-Indiana-United States of America | Onsite/unclear | 2026-06-23 | 78 | WD30268786 | https://jci.wd5.myworkdayjobs.com/JCI/job/Indianapolis-Indiana-United-States-of-America/HVAC-Controls-Application-Engineer_WD30268786 | Matches performance, building automation, hvac, controls, systems, security | sponsorship not visible |
+| HVAC Controls Systems Engineer | Johnson Controls | Indianapolis-Indiana-United States of America | Onsite/unclear | 2026-06-23 | 75 | WD30268782-1 | https://jci.wd5.myworkdayjobs.com/JCI/job/Indianapolis-Indiana-United-States-of-America/HVAC-Controls-Pre-Install-Application-Engineer_WD30268782-1 | Matches building automation, hvac, controls, systems, security | sponsorship not visible |
+| Systems Engineer I | Johnson Controls | Charlotte-North Carolina-United States of America | Onsite/unclear | 2026-06-22 | 75 | WD30270002-1 | https://jci.wd5.myworkdayjobs.com/JCI/job/Charlotte-North-Carolina-United-States-of-America/Systems-Engineer-II_WD30270002-1 | Matches building automation, hvac, controls, systems, security | sponsorship not visible |
+| Embedded Software Engineer | Zoox | San Diego, CA | Onsite/unclear | 2026-06-10 | 75 | 0dd5de4b-4e98-4808-85fd-e739e7fc5bba | https://jobs.lever.co/zoox/0dd5de4b-4e98-4808-85fd-e739e7fc5bba | Matches firmware, embedded software, embedded | sponsorship not visible |
+| Fire Electrical Alarm Installer | Johnson Controls | Asheville-North Carolina-United States of America | Onsite/unclear | 2026-06-23 | 72 | WD30266042 | https://jci.wd5.myworkdayjobs.com/JCI/job/Asheville-North-Carolina-United-States-of-America/Fire-Alarm-Installer_WD30266042 | Matches performance, controls, systems, security | sponsorship not visible |
+
+## Run: 2026-06-23 22:32
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Senior Motion Planning Engineer – Trajectory Optimization | Torc Robotics | Remote - U.S, Ann Arbor, MI, Fort Worth, TX, Blacksburg, VA; Ann Arbor, Michigan, United States; Blacksburg, Virginia, United States; Fort Worth, TX; Remote - CAN; Remote - US | Remote | 2026-06-18 | 87 | R-102795 | https://job-boards.greenhouse.io/torcrobotics/jobs/8596548002 | Matches performance, robotics, c++, perception, systems, linux, autonomy, cuda | sponsorship not visible; seniority may be high |
+| Senior Autonomy Software Integration Engineer | Torc Robotics | Ann Arbor, MI, Fort Worth, TX, Blacksburg, VA; Ann Arbor, Michigan, United States | Onsite/unclear | 2026-06-15 | 87 | R-102761 | https://job-boards.greenhouse.io/torcrobotics/jobs/8583686002 | Matches networking, performance, robotics, c++, perception, embedded, systems, platform | sponsorship not visible; seniority may be high |
+| Software Engineer, II - Middleware | Torc Robotics | Ann Arbor, MI; Ann Arbor, Michigan, United States | Onsite/unclear | 2026-06-17 | 87 | R-102787 | https://job-boards.greenhouse.io/torcrobotics/jobs/8596538002 | Matches embedded linux, kernel, operating systems, networking, performance, robotics, rtos, c++ | sponsorship not visible |
+| Software Engineer II, Mission Interface | Torc Robotics | Ann Arbor, MI; Ann Arbor, Michigan, United States | Remote | 2026-06-12 | 87 | R-102775 | https://job-boards.greenhouse.io/torcrobotics/jobs/8586625002 | Matches embedded software, performance, robotics, c++, perception, embedded, systems, autonomy | sponsorship not visible |
+| Platform Verification Engineer - Software Systems | Waabi | San Francisco, CA | Onsite/unclear | 2026-06-23 | 87 | 8655f69b-a3eb-42b6-afed-2cfc262212f2 | https://jobs.lever.co/waabi/8655f69b-a3eb-42b6-afed-2cfc262212f2 | Matches platform software, performance, robotics, c++, autonomy, simulation, systems, platform | sponsorship not visible |
+| System Safety Engineer, Mining/Industrial | Applied Intuition | Sunnyvale; Sunnyvale Sunnyvale California United States | OnSite | 2026-06-23 | 84 | 12fc5adf-1827-45d4-83d9-3856064dd25e | https://jobs.ashbyhq.com/applied/12fc5adf-1827-45d4-83d9-3856064dd25e | Matches device drivers, operating systems, performance, robotics, autonomy, adas, validation, systems | sponsorship not visible |
+| HIL Applications Engineer | Applied Intuition | Ann Arbor; Ann Arbor Ann Arbor Michigan United States | OnSite | 2026-06-23 | 84 | 96173120-5b14-455f-a90a-50ca7c37a460 | https://jobs.ashbyhq.com/applied/96173120-5b14-455f-a90a-50ca7c37a460 | Matches operating systems, robotics, simulation, adas, validation, systems, ros, security | sponsorship not visible |
+| Senior Asset Pipeline Engineer - Sensor Platform | Applied Intuition | Sunnyvale; Sunnyvale Sunnyvale California United States | OnSite | 2026-06-11 | 84 | 2e0c417b-d6b9-42b1-971d-f3d95fc44af8 | https://jobs.ashbyhq.com/applied/2e0c417b-d6b9-42b1-971d-f3d95fc44af8 | Matches operating systems, robotics, c++, simulation, perception, validation, systems, platform | sponsorship not visible; seniority may be high |
+| Security Engineer, Vulnerability Management and Automation | Figure AI | San Jose, CA; San Jose, California, United States | Onsite/unclear | 2026-06-21 | 84 | 456 | https://job-boards.greenhouse.io/figureai/jobs/4690870006 | Matches robotics, humanoid, controls, systems, linux, platform, security | sponsorship not visible |
+| System Engineer II - Release Readiness & Metrics (Python) | Torc Robotics | Remote - U.S, Ann Arbor, MI, Fort Worth, TX, Blacksburg, VA; Fort Worth, TX | Remote | 2026-06-19 | 81 | R-102771 | https://job-boards.greenhouse.io/torcrobotics/jobs/8597132002 | Matches performance, robotics, perception, systems, platform, autonomy | sponsorship not visible |
+| System Safety Engineer, Vehicle OS | Applied Intuition | Sunnyvale; Sunnyvale Sunnyvale California United States | OnSite | 2026-06-23 | 81 | 35fd2526-a92d-4ef1-ad6f-96cf086b4508 | https://jobs.ashbyhq.com/applied/35fd2526-a92d-4ef1-ad6f-96cf086b4508 | Matches firmware, device drivers, operating systems, performance, adas, systems, platform | sponsorship not visible |
+| Validation Engineer | Applied Intuition | Sunnyvale; Sunnyvale Sunnyvale California United States | OnSite | 2026-06-18 | 81 | 5ea88015-eacb-40ea-9a25-fdcec096759c | https://jobs.ashbyhq.com/applied/5ea88015-eacb-40ea-9a25-fdcec096759c | Matches operating systems, networking, performance, adas, embedded, validation, systems | sponsorship not visible |
+| Software Engineer, Privacy & Data Governance | Figure AI | San Jose, CA; San Jose, California, United States | Onsite/unclear | 2026-06-21 | 81 | 457 | https://job-boards.greenhouse.io/figureai/jobs/4690871006 | Matches robotics, humanoid, embedded, controls, systems, security | sponsorship not visible |
+| Software Engineer - Game Development | Applied Intuition | Sunnyvale; Sunnyvale Sunnyvale California United States | OnSite | 2026-06-22 | 78 | ee6b42c8-6569-449d-8e69-4cc3c07fea74 | https://jobs.ashbyhq.com/applied/ee6b42c8-6569-449d-8e69-4cc3c07fea74 | Matches operating systems, networking, performance, autonomy, simulation, systems | sponsorship not visible |
+| Software Engineer, Maps Infra | Aurora | San Francisco, California; Seattle, Washington, United States | Hybrid | 2026-06-11 | 78 | R-102371 | https://aurora.tech/jobs/8588486002?gh_jid=8588486002 | Matches performance, c++, self-driving, perception, systems | sponsorship not visible |
+| Platform Verification Engineer - Embedded Systems | Waabi | San Francisco, CA | Onsite/unclear | 2026-06-23 | 78 | d0748dc8-f1c0-4f9b-9cbd-0c8b4e22ca7d | https://jobs.lever.co/waabi/d0748dc8-f1c0-4f9b-9cbd-0c8b4e22ca7d | Matches performance, robotics, systems, platform | sponsorship not visible |
+| Hardware Test Engineer | Applied Intuition | Sunnyvale; Sunnyvale Sunnyvale California United States | OnSite | 2026-06-15 | 75 | d8b7286e-bd47-407b-859d-f2b7f5822a8c | https://jobs.ashbyhq.com/applied/d8b7286e-bd47-407b-859d-f2b7f5822a8c | Matches operating systems, performance, adas, validation, systems | sponsorship not visible |
+| Senior IT Applications Engineer | Aurora | Mountain View, California; Mountain View, California, United States | Hybrid | 2026-06-10 | 75 | R-102847 | https://aurora.tech/jobs/8581223002?gh_jid=8581223002 | Matches self-driving, systems, platform, security | sponsorship not visible; seniority may be high |
+| Senior Software Engineer,  Developer Productivity Cloud Infrastructure | Skydio | San Mateo, California, United States; San Mateo, California, United States San Mateo California United States | Hybrid | 2026-06-22 | 75 | e039f6f5-6136-4a24-8a30-f4a2979d1ac7 | https://jobs.ashbyhq.com/skydio/e039f6f5-6136-4a24-8a30-f4a2979d1ac7 | Matches networking, c++, drone, security | sponsorship not visible; seniority may be high; authorization/export-control language needs review |
+| Electrical Engineer, Actuator Systems | Figure AI | San Jose, CA; San Jose, California, United States | Onsite/unclear | 2026-06-10 | 75 | 454 | https://job-boards.greenhouse.io/figureai/jobs/4688381006 | Matches robotics, humanoid, embedded, systems | sponsorship not visible |
+
+## Run: 2026-06-23 22:33
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Robot Field Operator | Gecko Robotics | Aurora, NC; Aurora, NC Aurora North Carolina United States | OnSite | 2026-06-16 | 81 | c4830d77-fd64-4792-9a0f-0ffb354cc6ad | https://jobs.ashbyhq.com/gecko-robotics/c4830d77-fd64-4792-9a0f-0ffb354cc6ad | Matches robotics, inspection, embedded, sensors, industrial, platform, autonomy | sponsorship not visible; authorization/export-control language needs review |
+| People Operations Coordinator | Kodiak Robotics | Lancaster, TX; Dallas, Texas, United States | Onsite/unclear | 2026-06-08 | 75 | R330-1 | https://job-boards.greenhouse.io/kodiak/jobs/4278219009 | Matches robotics, self-driving, systems, platform | authorization/export-control language needs review |
+| Safety Driver – Full Time/Contract (PM Shift) | Avride | Austin, Texas, United States; Austin, Texas, United States; Dallas, Texas, United States | Remote | 2026-06-12 | 75 | 134 | https://job-boards.greenhouse.io/avride/jobs/4285347009 | Matches performance, autonomous, systems | authorization/export-control language needs review |
+
+## Run: 2026-06-23 22:40
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| PC Board Designer 5 | Renesas | Tempe, Arizona, United States | Remote | 2026-06-18 | 81 | 20029680_2026-06-16 | https://jobs.smartrecruiters.com/RenesasElectronics/744000132936479 | Matches connectivity, performance, semiconductor, embedded, automotive, systems | authorization/export-control language needs review |
+| Test Hardware Engineer | Renesas | Austin, TEXAS, United States | Remote | 2026-06-16 | 81 | 20029759_2026-06-10 | https://jobs.smartrecruiters.com/RenesasElectronics/744000132482541 | Matches connectivity, performance, semiconductor, embedded, automotive, systems, sockets | sponsorship not visible; authorization/export-control language needs review |
+| Senior Engineer, AI Compiler - Automotive SoC | Renesas | Dallas, TX, United States | Remote | 2026-06-15 | 81 | 11015212_2026-03-02 | https://jobs.smartrecruiters.com/RenesasElectronics/744000132257128 | Matches kernel, connectivity, performance, semiconductor, embedded, automotive, systems | sponsorship not visible; seniority may be high; authorization/export-control language needs review |
+| Benefits Specialist | Axis Communications | USA - MA - Chelmsford | Onsite/unclear | 2026-06-22 | 72 | R-123364 | https://axis.wd3.myworkdayjobs.com/External_Career_Site/job/USA---MA---Chelmsford/Benefits-Specialist_R-123364 | Matches video surveillance, network, systems, security | sponsorship not visible; authorization/export-control language needs review |
+| Senior Embedded Software Engineer (Wireless) | TP-Link | Irvine, United States | Onsite/unclear | 2026-06-20 | 72 | 81BFFEDC03 | https://apply.workable.com/tp-link-usa-corp/j/81BFFEDC03/ | Matches embedded software, embedded, systems | sponsorship not visible; seniority may be high |
+| Senior Embedded Software Engineer (Consumer Home) | TP-Link | Irvine, United States | Onsite/unclear | 2026-06-20 | 72 | A5321B341B | https://apply.workable.com/tp-link-usa-corp/j/A5321B341B/ | Matches embedded software, embedded, systems | sponsorship not visible; seniority may be high |
+| Embedded Software Engineer (Wireless) | TP-Link | Irvine, United States | Onsite/unclear | 2026-06-20 | 72 | E78A84552E | https://apply.workable.com/tp-link-usa-corp/j/E78A84552E/ | Matches embedded software, embedded, systems | sponsorship not visible |
+| Embedded Software Engineer (Consumer Home) | TP-Link | Irvine, United States | Onsite/unclear | 2026-06-20 | 72 | 0DC81C1556 | https://apply.workable.com/tp-link-usa-corp/j/0DC81C1556/ | Matches embedded software, embedded, systems | sponsorship not visible |
+
+## Run: 2026-06-23 22:46
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Embedded Software Engineer | Wabtec | West Melbourne, FL, United States | Onsite/unclear | 2026-06-18 | 87 | R0112006 | https://jobs.smartrecruiters.com/Wabtec/3743990013691486 | Matches embedded software, operating systems, performance, rtos, tcp/ip, c++, rail, embedded | sponsorship not visible; authorization/export-control language needs review |
+| Tester in Charge | Wabtec | Perth, WA, Australia | Onsite/unclear | 2026-06-17 | 72 | R0112219 | https://jobs.smartrecruiters.com/Wabtec/3743990013656616 | Matches performance, rail, industrial, systems | sponsorship not visible; authorization/export-control language needs review |
+| Foundry Laborer | Wabtec | Export, PA, United States | Onsite/unclear | 2026-06-10 | 72 | R0111993 | https://jobs.smartrecruiters.com/Wabtec/3743990013558311 | Matches performance, rail, industrial, systems | sponsorship not visible; authorization/export-control language needs review |
+
+## Run: 2026-06-24 10:44
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Senior AI Researcher - World Foundation Models | NVIDIA | US, CA, Remote; US, WA, Remote; US, OR, Remote | remote_local | 2026-06-23 | 78 | JR2017491 | https://jobs.nvidia.com/careers/job/893395013952 | Matches performance, c++, systems, platform, cuda | sponsorship not visible; seniority may be high |
+| Senior Camera Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-22 | 75 | 3092977 | https://careers.qualcomm.com/careers/job/446719159347 | Matches performance, systems, camera, security | sponsorship not visible; seniority may be high |
+
+## Run: 2026-06-24 11:18
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| HVAC Controls Systems Engineer | Johnson Controls | Indianapolis-Indiana-United States of America | Onsite/unclear | 2026-06-23 | 78 | WD30268926 | https://jci.wd5.myworkdayjobs.com/JCI/job/Indianapolis-Indiana-United-States-of-America/HVAC-Controls-Systems-Engineer_WD30268926 | Matches networking, performance, hvac, controls, systems, security | sponsorship not visible |
+| HVAC Controls Application Engineer | Johnson Controls | Indianapolis-Indiana-United States of America | Onsite/unclear | 2026-06-23 | 78 | WD30268927 | https://jci.wd5.myworkdayjobs.com/JCI/job/Indianapolis-Indiana-United-States-of-America/HVAC-Controls-Pre-Install-Application-Engineer_WD30268927 | Matches performance, building automation, hvac, controls, systems, security | sponsorship not visible |
+
+## Run: 2026-06-24 11:20
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Software Engineer II - Localization | Torc Robotics | Ann Arbor, MI; Ann Arbor, Michigan, United States | Onsite/unclear | 2026-06-24 | 87 | R-102774 | https://job-boards.greenhouse.io/torcrobotics/jobs/8597758002 | Matches performance, robotics, c++, lidar, perception, embedded, systems, linux | sponsorship not visible |
+| Senior Autonomy Software Release Engineer | Torc Robotics | Ann Arbor, MI; Ann Arbor, Michigan, United States | Onsite/unclear | 2026-06-24 | 75 | 805 | https://job-boards.greenhouse.io/torcrobotics/jobs/8605890002 | Matches robotics, systems, linux, autonomy | sponsorship not visible; seniority may be high |
+| Safety Statistician, III – Risk & Safety Analysis | Torc Robotics | Blacksburg, VA, Remote - US; Blacksburg, Virginia, United States; Remote - US | Remote | 2026-06-24 | 72 | R-102792 | https://job-boards.greenhouse.io/torcrobotics/jobs/8600782002 | Matches performance, robotics, systems | sponsorship not visible |
+
+## Run: 2026-06-24 11:26
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Digital Engineer | Renesas | Morrisville, North Carolina, United States | Remote | 2026-06-24 | 78 | 20029894_2026-06-18 | https://jobs.smartrecruiters.com/RenesasElectronics/744000133966479 | Matches connectivity, performance, semiconductor, embedded, automotive, systems | sponsorship not visible; authorization/export-control language needs review |
+
+## Run: 2026-06-24 22:49
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Senior Software Engineer, CUDA UMD - Graphs and GPU Sharing | NVIDIA | US, CA, Santa Clara | onsite | 2026-06-24 | 87 | JR2014056 | https://jobs.nvidia.com/careers/job/893393905947 | Matches kernel, device drivers, systems software, system software, operating systems, c++, cuda driver, systems | sponsorship not visible; seniority may be high |
+| Senior Systems Software Engineer, Observability and Telemetry Platform | NVIDIA | US, CA, Santa Clara; Remote - US | remote_local | 2026-06-24 | 84 | JR2017559 | https://jobs.nvidia.com/careers/job/893395048317 | Matches systems software, networking, performance, systems, linux, platform | sponsorship not visible; seniority may be high |
+| Senior Robotics Systems Engineer - Neural Reconstruction and Real2Sim Applications | NVIDIA | US, CA, Santa Clara | onsite | 2026-06-24 | 81 | JR2020173 | https://jobs.nvidia.com/careers/job/893395802636 | Matches performance, robotics, c++, systems, ros | sponsorship not visible; seniority may be high |
+| Senior Software Engineer - Network Engineer | Microsoft | United States, Washington, Redmond | onsite | 2026-06-24 | 81 | 200033853 | https://apply.careers.microsoft.com/careers/job/1970393556855901 | Matches networking, connectivity, performance, c++, systems, security | sponsorship not visible; seniority may be high; authorization/export-control language needs review |
+| Senior Embedded Software Development Engineer | Qualcomm | Santa Clara, California, United States of America | onsite | 2026-06-24 | 81 | 3093115 | https://careers.qualcomm.com/careers/job/446719204345 | Matches firmware, embedded software, rtos, systems, security | sponsorship not visible; seniority may be high |
+| Senior Embedded Software Development Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-24 | 81 | 3093110 | https://careers.qualcomm.com/careers/job/446719203999 | Matches firmware, embedded software, rtos, systems, security | sponsorship not visible; seniority may be high |
+| Senior Systems Software Engineer, Kubernetes Scale - DGX Cloud | NVIDIA | US, CA, Santa Clara; US, WA, Seattle | onsite | 2026-06-24 | 78 | JR2019385 | https://jobs.nvidia.com/careers/job/893395526255 | Matches systems software, networking, performance, systems | sponsorship not visible; seniority may be high |
+| Infrastructure Systems Engineer | NVIDIA | US, CA, Santa Clara | onsite | 2026-06-24 | 78 | JR2020106 | https://jobs.nvidia.com/careers/job/893395802642 | Matches firmware, kernel, systems, linux, platform | sponsorship not visible |
+| System Design Engineer - New College Grad 2026 | NVIDIA | US, CA, Santa Clara | onsite | 2026-06-24 | 75 | JR2011879 | https://jobs.nvidia.com/careers/job/893392898537 | Matches performance, robotics, tegra, linux | sponsorship not visible |
+| Senior Infrastructure Software Engineer, Deep Learning Libraries | NVIDIA | US, CA, Santa Clara | onsite | 2026-06-24 | 75 | JR2020105 | https://jobs.nvidia.com/careers/job/893395802268 | Matches kernel, operating systems, systems, cuda | sponsorship not visible; seniority may be high |
+| Senior SoC/RTL Design Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-24 | 75 | 3093100 | https://careers.qualcomm.com/careers/job/446719203139 | Matches networking, performance, platform, security | sponsorship not visible; seniority may be high |
+| Senior Cellular System Test Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-24 | 75 | 3093118 | https://careers.qualcomm.com/careers/job/446719204400 | Matches firmware, performance, systems, security | sponsorship not visible; seniority may be high |
+| Senior Modem Software Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-24 | 75 | 3093111 | https://careers.qualcomm.com/careers/job/446719204344 | Matches firmware, performance, systems, security | sponsorship not visible; seniority may be high |
+| Senior Verification Engineer, SoC | NVIDIA | US, CA, Santa Clara; US, TX, Austin; US, MA, Westford; US, OR, Hillsboro; US, CA, Remote | remote_local | 2026-06-24 | 72 | JR2012656 | https://jobs.nvidia.com/careers/job/893393294742 | Matches c++, soc, fpga | sponsorship not visible; seniority may be high |
+| SOC IP Methodology Engineer - Custom SOC | NVIDIA | US, CA, Santa Clara; US, TX, Austin; US, OR, Hillsboro | onsite | 2026-06-24 | 72 | JR2011584 | https://jobs.nvidia.com/careers/job/893392882391 | Matches performance, soc, systems | sponsorship not visible |
+| Custom SOC IP Verification Engineer | NVIDIA | US, CA, Santa Clara; US, TX, Austin | onsite | 2026-06-24 | 72 | JR2013284 | https://jobs.nvidia.com/careers/job/893393550212 | Matches c++, soc, platform | sponsorship not visible |
+| Systems Quality and Reliability Engineer - LPU | NVIDIA | US, CA, Santa Clara | onsite | 2026-06-24 | 72 | JR2018660 | https://jobs.nvidia.com/careers/job/893395271725 | Matches performance, c++, systems | sponsorship not visible |
+| Senior Full-stack Software Engineer – Verification Data and Visualization Platform | NVIDIA | US, CA, Santa Clara; US, NC, Durham; US, MA, Westford | onsite | 2026-06-24 | 72 | JR2019652 | https://jobs.nvidia.com/careers/job/893395802602 | Matches systems, platform, streaming | sponsorship not visible; seniority may be high |
+| Senior Cellular Technologies Software Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-24 | 72 | 3093096 | https://careers.qualcomm.com/careers/job/446719202431 | Matches performance, systems, security | sponsorship not visible; seniority may be high |
+| Senior Camera Software Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-24 | 72 | 3093105 | https://careers.qualcomm.com/careers/job/446719203445 | Matches performance, camera, security | sponsorship not visible; seniority may be high |
+
+## Run: 2026-06-24 23:18
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Security Systems Installer | Johnson Controls | Fort Wayne-Indiana-United States of America | Onsite/unclear | 2026-06-24 | 78 | WD30266002 | https://jci.wd5.myworkdayjobs.com/JCI/job/Fort-Wayne-Indiana-United-States-of-America/Security-Installer_WD30266002 | Matches networking, tcp/ip, controls, systems, camera, security | sponsorship not visible |
+| HVAC Controls Application Engineer | Johnson Controls | Indianapolis-Indiana-United States of America | Onsite/unclear | 2026-06-22 | 78 | WD30268785 | https://jci.wd5.myworkdayjobs.com/JCI/job/Indianapolis-Indiana-United-States-of-America/HVAC-Controls-Application-Engineer_WD30268785 | Matches performance, building automation, hvac, controls, systems, security | sponsorship not visible |
+| Senior Chassis Engineer - Actuators/Brakes | Zoox | Foster City, CA | Onsite/unclear | 2026-06-24 | 78 | d1f4e09e-90c5-444f-a880-7ce17f281e41 | https://jobs.lever.co/zoox/d1f4e09e-90c5-444f-a880-7ce17f281e41 | Matches firmware, performance, robotics, controls, systems | sponsorship not visible; seniority may be high |
+
+## Run: 2026-06-24 23:20
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Senior Software Engineer, Planning Infrastructure | Kodiak Robotics | Mountain View, California; Mountain View, California, United States | Onsite/unclear | 2026-06-24 | 84 | R338-1 | https://job-boards.greenhouse.io/kodiak/jobs/4297189009 | Matches performance, robotics, c++, self-driving, systems, platform, autonomy | seniority may be high |
+
+## Run: 2026-06-24 23:30
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| AUXILIAR CUARTO DE HERRAMIENTAS | Wabtec | Torreon, CO, Mexico | Onsite/unclear | 2026-06-24 | 75 | R0112787 | https://jobs.smartrecruiters.com/Wabtec/3743990013767428 | Matches performance, rail, industrial, systems | authorization/export-control language needs review |
+
+## Run: 2026-06-24 23:34 (general)
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Linux Engineer | Indeed | United States | Hybrid | 2026-06-22 | 75 | 23789ca63169e7ba | https://www.indeed.com/viewjob?jk=23789ca63169e7ba | Matches performance, linux, platform, security | sponsorship not visible |
+
+## Run: 2026-06-25 11:24
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Senior HPC Support Engineer - Compute and GPU Platform | NVIDIA | US, CA, Remote; US, NC, Remote; US, NY, Remote; US, WA, Remote; US, CA, Santa Clara; US, MA, Remote | remote_local | 2026-06-25 | 78 | JR2020113 | https://jobs.nvidia.com/careers/job/893395881825 | Matches operating systems, networking, systems, linux, platform | sponsorship not visible; seniority may be high |
+| Senior Software Engineer | Microsoft | United States, New York, New York; United States, Washington, Redmond | onsite | 2026-06-24 | 78 | 200023315 | https://apply.careers.microsoft.com/careers/job/1970393556748077 | Matches performance, c++, systems, linux, platform, security | sponsorship not visible; seniority may be high; authorization/export-control language needs review |
+| Senior SoC/RTL Design Engineer | Qualcomm | San Diego, California, United States of America | onsite | 2026-06-24 | 75 | 3093107 | https://careers.qualcomm.com/careers/job/446719203441 | Matches networking, performance, platform, security | sponsorship not visible; seniority may be high |
+| Senior Localization Engineer - Autonomous Vehicles | NVIDIA | US, CA, Santa Clara; US, CA, Remote | remote_local | 2026-06-24 | 72 | JR2014589 | https://jobs.nvidia.com/careers/job/893394019130 | Matches c++, platform, cuda | sponsorship not visible; seniority may be high |
+| Senior Power Integrity Co-Design Engineer | NVIDIA | US, CA, Santa Clara | onsite | 2026-06-24 | 72 | JR2018836 | https://jobs.nvidia.com/careers/job/893395803704 | Matches soc, systems, platform | sponsorship not visible; seniority may be high |
+
+## Run: 2026-06-25 11:30
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Software Engineer | Broadcom | USA-CA San Jose Innovation Drive | Onsite/unclear | 2026-06-24 | 81 | R025018 | https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA-San-Jose-Innovation-Drive/Software-Engineer_R025018 | Matches firmware, embedded software, performance, switch, nic, linux | sponsorship not visible |
+| R&D Engineer Hardware | Broadcom | USA-CA Irvine Alton Parkway Bldg 2 | Onsite/unclear | 2026-06-24 | 72 | R024892 | https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA-Irvine-Alton-Parkway-Bldg-2/R-D-Engineer-Hardware_R024892 | Matches connectivity, performance, systems | sponsorship not visible |
+
+## Run: 2026-06-25 11:49
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Software QA Engineer 2 | Dexcom | Remote - United States | Remote | 2026-06-24 | 75 | JR119542-1 | https://dexcom.wd1.myworkdayjobs.com/Dexcom/job/Remote---United-States/Software-QA-Engineer-2_JR119542-1 | Matches performance, cgm, glucose, systems | sponsorship not visible |
+
+## Run: 2026-06-25 12:10 (general)
+
+| Job Title | Company | Location | Work Mode | Posted | Score | Job ID | URL | Match Reason | Concerns |
+|---|---|---|---|---|---:|---|---|---|---|
+| Senior DevOps Engineer | Lemon.io | Remote | Remote | 2026-06-24 | 72 | 1134015 | https://remoteOK.com/remote-jobs/remote-senior-devops-engineer-lemon-io-1134015 | Matches embedded software, c++, platform | seniority may be high |

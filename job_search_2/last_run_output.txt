@@ -1,0 +1,50 @@
+# command: /usr/bin/python3 /home/divyesh/job_hunt/auto_search/job_search_2/jobsearch_part2.py --days 2 --limit 100 --append
+# exit_code: 0
+
+Part 2 search: limit=100, days=2, cutoff=2026-06-23
+Official-source adapters only. Dry-run unless --append is set.
+
+Source health
+Company     | Method     | Status             | Count | Note
+------------+------------+--------------------+-------+------------------------------
+Cisco       | requests   | ok                 |    83 | 
+AMD         | requests   | ok                 |    70 | 
+Broadcom    | requests   | ok                 |   100 | 
+Intel       | requests   | ok                 |    40 | 
+Arm         | requests   | ok                 |     3 | 
+Marvell     | requests   | ok                 |    40 | 
+Texas Instruments | requests   | ok                 |   100 | 
+NXP         | requests   | ok                 |    40 | 
+Garmin      | requests   | ok                 |    70 | 
+Sony        | requests   | ok                 |    47 | 
+
+New confirmed_recent jobs
+1. [81] Broadcom - Software Engineer
+   USA-CA San Jose Innovation Drive | Onsite/unclear | 2026-06-24 | confirmed_recent
+   https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA-San-Jose-Innovation-Drive/Software-Engineer_R025018
+   Matches firmware, embedded software, performance, switch, nic, linux
+   Concerns: sponsorship not visible
+2. [72] Broadcom - R&D Engineer Hardware
+   USA-CA Irvine Alton Parkway Bldg 2 | Onsite/unclear | 2026-06-24 | confirmed_recent
+   https://broadcom.wd1.myworkdayjobs.com/External_Career/job/USA-CA-Irvine-Alton-Parkway-Bldg-2/R-D-Engineer-Hardware_R024892
+   Matches connectivity, performance, systems
+   Concerns: sponsorship not visible
+
+New posted_hidden_top_results jobs
+None
+
+Rejected
+- old_posting: 376
+- non_target_role_family: 359
+- experience_level_high: 182
+- location_mismatch: 170
+- internship: 82
+- no_sponsorship: 69
+- duplicate_ledger: 33
+- weak_role_match: 9
+- clearance_required: 9
+- citizenship_required: 8
+
+Raw jobs: 593 | Accepted: 2 | Duplicates skipped: 33
+
+Appended 2 jobs to /home/divyesh/job_hunt/auto_search/job_search_2/../jobsearchdocs/jobs_found.md

@@ -1,0 +1,46 @@
+# command: /usr/bin/python3 /home/divyesh/job_hunt/auto_search/job_search_4/jobsearch_part4.py --days 2 --limit 100 --append
+# exit_code: 0
+
+Part 4 search: limit=100, days=2, cutoff=2026-06-23
+Official-source adapters only. Dry-run unless --append is set.
+
+Source health
+Company     | Method     | Status             | Count | Note
+------------+------------+--------------------+-------+------------------------------
+Medtronic   | requests   | ok                 |    40 | 
+Intuitive Surgical | requests   | ok                 |     2 | 
+GE HealthCare | requests   | ok                 |    13 | 
+Siemens Healthineers | requests   | ok                 |   100 | 
+Dexcom      | requests   | ok                 |    40 | 
+Rockwell Automation | requests   | ok                 |    39 | 
+Schneider Electric | requests   | ok                 |   100 | 
+Eaton       | requests   | ok                 |     9 | 
+Caterpillar | requests   | ok                 |   100 | 
+John Deere  | requests   | ok                 |   100 | 
+
+New confirmed_recent jobs
+1. [75] Dexcom - Software QA Engineer 2
+   Remote - United States | Remote | 2026-06-24 | confirmed_recent
+   https://dexcom.wd1.myworkdayjobs.com/Dexcom/job/Remote---United-States/Software-QA-Engineer-2_JR119542-1
+   Matches performance, cgm, glucose, systems
+   Concerns: sponsorship not visible
+
+New posted_hidden_top_results jobs
+None
+
+Rejected
+- non_target_role_family: 495
+- location_mismatch: 195
+- experience_level_high: 137
+- part_time: 130
+- old_posting: 90
+- no_sponsorship: 71
+- internship: 46
+- duplicate_ledger: 35
+- weak_role_match: 2
+- clearance_required: 1
+- low_score: 1
+
+Raw jobs: 543 | Accepted: 1 | Duplicates skipped: 35
+
+Appended 1 jobs to /home/divyesh/job_hunt/auto_search/job_search_4/../jobsearchdocs/jobs_found.md

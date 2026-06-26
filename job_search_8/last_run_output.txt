@@ -1,0 +1,38 @@
+# command: /usr/bin/python3 /home/divyesh/job_hunt/auto_search/job_search_8/jobsearch_part8.py --days 2 --limit 100 --append
+# exit_code: 0
+
+Part 8 search: limit=100, days=2, cutoff=2026-06-23
+Official-source adapters only. Dry-run unless --append is set.
+
+Source health
+Company     | Method     | Status             | Count | Note
+------------+------------+--------------------+-------+------------------------------
+Cognex      | requests   | ok                 |    16 | 
+Axis Communications | requests   | ok                 |    21 | 
+Arlo        | requests   | ok                 |    22 | 
+Ubiquiti    | requests   | ok                 |     4 | 
+Netgear     | requests   | ok                 |     5 | 
+TP-Link     | requests   | ok                 |    30 | 
+Ambarella   | requests   | ok                 |    22 | 
+ON Semiconductor | requests   | ok                 |    49 | 
+MediaTek    | requests   | ok                 |     5 | 
+Renesas     | requests   | ok                 |    37 | 
+
+New confirmed_recent jobs
+None
+
+New posted_hidden_top_results jobs
+None
+
+Rejected
+- non_target_role_family: 128
+- old_posting: 103
+- experience_level_high: 97
+- location_mismatch: 59
+- duplicate_ledger: 13
+- internship: 12
+- weak_role_match: 5
+
+Raw jobs: 211 | Accepted: 0 | Duplicates skipped: 13
+
+Append skipped: no new jobs after final ledger re-read.

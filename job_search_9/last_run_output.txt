@@ -1,0 +1,41 @@
+# command: /usr/bin/python3 /home/divyesh/job_hunt/auto_search/job_search_9/jobsearch_part9.py --days 2 --limit 100 --append
+# exit_code: 0
+
+Part 9 search: limit=100, days=2, cutoff=2026-06-23
+Official-source adapters only. Dry-run unless --append is set.
+
+Source health
+Company     | Method     | Status             | Count | Note
+------------+------------+--------------------+-------+------------------------------
+Infineon    | requests   | ok                 |   100 | 
+STMicroelectronics | requests   | ok                 |    10 | 
+Microchip   | requests   | ok                 |     5 | 
+Lattice Semiconductor | requests   | ok                 |    50 | 
+Synaptics   | requests   | parser_failed      |     0 | 
+Teledyne FLIR | requests   | ok                 |    40 | 
+Hanwha Vision | requests   | ok                 |    13 | 
+Alarm.com   | requests   | ok                 |    66 | 
+SimpliSafe  | requests   | ok                 |    32 | 
+iRobot      | requests   | ok                 |     7 | 
+
+New confirmed_recent jobs
+None
+
+New posted_hidden_top_results jobs
+None
+
+Rejected
+- old_posting: 266
+- non_target_role_family: 214
+- experience_level_high: 154
+- location_mismatch: 70
+- internship: 18
+- duplicate_ledger: 15
+- no_sponsorship: 12
+- citizenship_required: 8
+- clearance_required: 5
+- weak_role_match: 3
+
+Raw jobs: 323 | Accepted: 0 | Duplicates skipped: 15
+
+Append skipped: no new jobs after final ledger re-read.

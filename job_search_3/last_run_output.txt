@@ -1,0 +1,42 @@
+# command: /usr/bin/python3 /home/divyesh/job_hunt/auto_search/job_search_3/jobsearch_part3.py --days 2 --limit 100 --append
+# exit_code: 0
+
+Part 3 search: limit=100, days=2, cutoff=2026-06-23
+Official-source adapters only. Dry-run unless --append is set.
+
+Source health
+Company     | Method     | Status             | Count | Note
+------------+------------+--------------------+-------+------------------------------
+Bosch       | requests   | ok                 |   100 | 
+Siemens     | requests   | ok                 |   100 | 
+Honeywell   | requests   | ok                 |    37 | 
+HPE Aruba Networking | requests   | ok                 |     5 | 
+Juniper Networks | requests   | ok                 |     5 | 
+Arista Networks | requests   | ok                 |    83 | 
+Fortinet    | requests   | ok                 |    15 | 
+Ciena       | requests   | ok                 |    40 | 
+Nokia       | requests   | ok                 |    36 | 
+Ericsson    | requests   | ok                 |    66 | 
+
+New confirmed_recent jobs
+None
+
+New posted_hidden_top_results jobs
+None
+
+Rejected
+- non_target_role_family: 402
+- old_posting: 256
+- location_mismatch: 232
+- experience_level_high: 139
+- part_time: 26
+- duplicate_ledger: 24
+- internship: 21
+- weak_role_match: 17
+- no_sponsorship: 6
+- non_official_source: 5
+- clearance_required: 3
+
+Raw jobs: 487 | Accepted: 0 | Duplicates skipped: 24
+
+Append skipped: no new jobs after final ledger re-read.

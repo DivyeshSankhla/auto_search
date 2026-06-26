@@ -1,0 +1,41 @@
+# command: /usr/bin/python3 /home/divyesh/job_hunt/auto_search/job_search_5/jobsearch_part5.py --days 2 --limit 100 --append
+# exit_code: 0
+
+Part 5 search: limit=100, days=2, cutoff=2026-06-23
+Official-source adapters only. Dry-run unless --append is set.
+
+Source health
+Company     | Method     | Status             | Count | Note
+------------+------------+--------------------+-------+------------------------------
+Johnson Controls | requests   | ok                 |   100 | 
+Panasonic   | requests   | ok                 |   100 | 
+Canonical   | requests   | ok                 |   100 | 
+Roku        | requests   | ok                 |   100 | 
+Sonos       | requests   | ok                 |     5 | 
+Bose        | requests   | ok                 |    40 | 
+Verkada     | requests   | ok                 |   100 | 
+Samsara     | requests   | ok                 |   100 | 
+Zoox        | requests   | ok                 |   100 | 
+Rivian / Rivian VW | requests   | ok                 |   100 | 
+
+New confirmed_recent jobs
+None
+
+New posted_hidden_top_results jobs
+None
+
+Rejected
+- non_target_role_family: 672
+- old_posting: 570
+- experience_level_high: 265
+- location_mismatch: 256
+- duplicate_ledger: 110
+- part_time: 104
+- no_sponsorship: 15
+- internship: 10
+- weak_role_match: 3
+- citizenship_required: 1
+
+Raw jobs: 845 | Accepted: 0 | Duplicates skipped: 110
+
+Append skipped: no new jobs after final ledger re-read.

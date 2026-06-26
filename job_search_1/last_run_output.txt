@@ -1,0 +1,67 @@
+# command: /usr/bin/python3 /home/divyesh/job_hunt/auto_search/job_search_1/jobsearch_part1.py --days 2 --limit 100 --append
+# exit_code: 0
+
+Part 1 search: limit=100, days=2, cutoff=2026-06-23
+Official-source adapters only. Dry-run unless --append is set.
+
+Source health
+Company     | Method     | Status             | Count | Note
+------------+------------+--------------------+-------+------------------------------
+NVIDIA      | requests   | ok                 |   100 | 
+Apple       | requests   | ok                 |   100 | 
+Google      | requests   | ok                 |   100 | 
+Microsoft   | requests   | ok                 |    99 | 
+Meta        | playwright | ok                 |    11 | 
+OpenAI      | requests   | ok                 |   100 | 
+Amazon      | requests   | ok                 |   100 | 
+Waymo       | requests   | ok                 |   386 | 
+Qualcomm    | requests   | ok                 |   100 | 
+Tesla       | curl_cffi  | ok                 |     5 | 
+
+New confirmed_recent jobs
+1. [78] NVIDIA - Senior HPC Support Engineer - Compute and GPU Platform
+   US, CA, Remote; US, NC, Remote; US, NY, Remote; US, WA, Remote; US, CA, Santa Clara; US, MA, Remote | remote_local | 2026-06-25 | confirmed_recent
+   https://jobs.nvidia.com/careers/job/893395881825
+   Matches operating systems, networking, systems, linux, platform
+   Concerns: sponsorship not visible; seniority may be high
+2. [78] Microsoft - Senior Software Engineer
+   United States, New York, New York; United States, Washington, Redmond | onsite | 2026-06-24 | confirmed_recent
+   https://apply.careers.microsoft.com/careers/job/1970393556748077
+   Matches performance, c++, systems, linux, platform, security
+   Concerns: sponsorship not visible; seniority may be high; authorization/export-control language needs review
+3. [75] Qualcomm - Senior SoC/RTL Design Engineer
+   San Diego, California, United States of America | onsite | 2026-06-24 | confirmed_recent
+   https://careers.qualcomm.com/careers/job/446719203441
+   Matches networking, performance, platform, security
+   Concerns: sponsorship not visible; seniority may be high
+4. [72] NVIDIA - Senior Localization Engineer - Autonomous Vehicles
+   US, CA, Santa Clara; US, CA, Remote | remote_local | 2026-06-24 | confirmed_recent
+   https://jobs.nvidia.com/careers/job/893394019130
+   Matches c++, platform, cuda
+   Concerns: sponsorship not visible; seniority may be high
+5. [72] NVIDIA - Senior Power Integrity Co-Design Engineer
+   US, CA, Santa Clara | onsite | 2026-06-24 | confirmed_recent
+   https://jobs.nvidia.com/careers/job/893395803704
+   Matches soc, systems, platform
+   Concerns: sponsorship not visible; seniority may be high
+
+New posted_hidden_top_results jobs
+None
+
+Rejected
+- non_target_role_family: 473
+- experience_level_high: 277
+- old_posting: 186
+- duplicate_ledger: 185
+- weak_role_match: 100
+- location_mismatch: 51
+- clearance_required: 12
+- no_sponsorship: 9
+- citizenship_required: 9
+- internship: 8
+- low_score: 8
+- part_time: 1
+
+Raw jobs: 815 | Accepted: 5 | Duplicates skipped: 185
+
+Appended 5 jobs to /home/divyesh/job_hunt/auto_search/job_search_1/../jobsearchdocs/jobs_found.md
