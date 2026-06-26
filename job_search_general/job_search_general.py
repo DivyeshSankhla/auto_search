@@ -12,8 +12,10 @@ from __future__ import annotations
 
 import argparse
 import base64
+import concurrent.futures
 import dataclasses
 import datetime as dt
+import email.utils
 import html
 import json
 import os
@@ -262,6 +264,12 @@ def pick_query(explicit: Optional[str]) -> str:
     return PROFILE_QUERIES[dt.date.today().toordinal() % len(PROFILE_QUERIES)]
 
 
+def pick_queries(explicit: Optional[str]) -> List[str]:
+    if explicit:
+        return [explicit.strip()]
+    return list(PROFILE_QUERIES)
+
+
 def parse_sites_flag(sites_arg: Optional[str]) -> Optional[set[str]]:
     if not sites_arg or sites_arg.strip().lower() == "all":
         return None
@@ -308,10 +316,16 @@ def query_match_loose(text: str, query: str) -> bool:
     if query_match(text, query):
         return True
     tokens = [t for t in re.split(r"\s+", query.lower()) if len(t) > 2]
-    if any(t in hay for t in tokens):
+    matched = sum(1 for token in tokens if token in hay)
+    if matched >= min(2, len(tokens)):
         return True
-    eng = ("engineer", "firmware", "embedded", "software", "developer", "kernel")
-    return any(term in hay for term in eng)
+    domain_terms = (
+        "firmware", "embedded", "linux kernel", "kernel driver", "device driver",
+        "systems software", "system software", "platform software", "rtos",
+        "bootloader", "uefi", "bios",
+    )
+    role_terms = ("engineer", "developer", "software")
+    return any(term in hay for term in domain_terms) and any(term in hay for term in role_terms)
 
 
 def unique_rows(items: Iterable[JobRow], limit: int, key: str = "url") -> List[JobRow]:
@@ -326,6 +340,25 @@ def unique_rows(items: Iterable[JobRow], limit: int, key: str = "url") -> List[J
         if len(out) >= limit:
             break
     return out
+
+
+def round_robin_raw_batches(batches: Sequence[Sequence[RawJob]], limit: int) -> List[RawJob]:
+    seen: set[str] = set()
+    output: List[RawJob] = []
+    max_length = max((len(batch) for batch in batches), default=0)
+    for index in range(max_length):
+        for batch in batches:
+            if index >= len(batch):
+                continue
+            raw = batch[index]
+            key = raw.url or raw.job_id
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            output.append(raw)
+            if len(output) >= limit:
+                return output
+    return output
 
 
 def row_to_raw(site: str, method: str, row: JobRow, location: str = "") -> RawJob:
@@ -355,6 +388,16 @@ def row_to_raw(site: str, method: str, row: JobRow, location: str = "") -> RawJo
 
 
 def adapter_health(site: str, method: str, code: Optional[int], jobs: List[RawJob], note: str = "") -> Health:
+    if jobs:
+        missing_titles = sum(not job.title for job in jobs)
+        missing_ids = sum(not job.job_id for job in jobs)
+        quality = []
+        if missing_titles:
+            quality.append(f"{missing_titles} missing titles")
+        if missing_ids and site in {"LinkedIn", "Indeed", "Dice"}:
+            quality.append(f"{missing_ids} missing IDs")
+        if quality:
+            note = "; ".join(filter(None, (note, ", ".join(quality))))
     return Health(site, method, status_from(code, len(jobs)), len(jobs), note=note)
 
 
@@ -435,40 +478,51 @@ def fetch_page(ctx: RunContext, url: str, prefer_curl: bool = False) -> Tuple[Op
 
 def parse_indeed_cards(body: str) -> List[JobRow]:
     jobs: List[JobRow] = []
-    jks = re.findall(r'data-jk="([a-f0-9]+)"', body)
-    titles = re.findall(r'<span[^>]*title="([^"]{5,120})"', body)
-    if jks and titles:
-        for jk, title in zip(jks, titles):
-            jobs.append({"title": clean_text(title), "url": f"https://www.indeed.com/viewjob?jk={jk}", "job_id": jk})
-        return jobs
-    for match in re.finditer(
-        r'data-jk="(?P<jk>[a-f0-9]+)"[\s\S]{0,1200}?'
-        r'<(?:h2|span)[^>]*class="[^"]*jobTitle[^"]*"[^>]*>[\s\S]*?'
-        r'<span[^>]*>(?P<title>[^<]{3,120})</span>',
-        body, flags=re.I,
-    ):
-        jk = match.group("jk")
-        jobs.append({"title": clean_text(match.group("title")), "url": f"https://www.indeed.com/viewjob?jk={jk}", "job_id": jk})
-    if jobs:
-        return jobs
-    for jk in jks:
-        jobs.append({"title": "", "url": f"https://www.indeed.com/viewjob?jk={jk}", "job_id": jk})
+    starts = list(re.finditer(r'data-jk="([a-f0-9]{16})"', body, flags=re.I))
+    for idx, match in enumerate(starts):
+        jk = match.group(1)
+        end = starts[idx + 1].start() if idx + 1 < len(starts) else min(len(body), match.start() + 12000)
+        card = body[match.start():end]
+        title_match = re.search(r'<span[^>]*title="([^"]{3,160})"', card, flags=re.I)
+        if not title_match:
+            title_match = re.search(
+                r'class="[^"]*jobTitle[^"]*"[\s\S]{0,600}?<span[^>]*>([^<]{3,160})</span>',
+                card, flags=re.I,
+            )
+        title = clean_text(title_match.group(1)) if title_match else ""
+        company_match = re.search(r'(?:data-testid="company-name"|class="[^"]*companyName[^"]*")[^>]*>([^<]{2,120})<', card, flags=re.I)
+        location_match = re.search(r'(?:data-testid="text-location"|class="[^"]*companyLocation[^"]*")[^>]*>([^<]{2,120})<', card, flags=re.I)
+        jobs.append({
+            "title": title,
+            "url": f"https://www.indeed.com/viewjob?jk={jk}",
+            "job_id": jk,
+            "company": clean_text(company_match.group(1)) if company_match else "",
+            "location": clean_text(location_match.group(1)) if location_match else "",
+        })
     return jobs
 
 
 def parse_linkedin_cards(body: str) -> List[JobRow]:
     jobs: List[JobRow] = []
-    for match in re.finditer(
-        r'base-search-card__title[^>]*>\s*([^<]{3,120})\s*<[\s\S]{0,2500}?'
-        r'https://www\.linkedin\.com/jobs/view/([^?\s"&]+)',
-        body, flags=re.I,
-    ):
-        slug = match.group(2)
-        jobs.append({"title": clean_text(match.group(1)), "url": f"https://www.linkedin.com/jobs/view/{slug}"})
-    if jobs:
-        return jobs
-    for slug in re.findall(r'https://www\.linkedin\.com/jobs/view/([^?\s"&]+)', body):
-        jobs.append({"title": clean_text(slug.replace("-at-", " at ").replace("-", " ")), "url": f"https://www.linkedin.com/jobs/view/{slug}"})
+    starts = list(re.finditer(r'data-entity-urn="urn:li:jobPosting:(\d+)"', body))
+    for idx, match in enumerate(starts):
+        job_id = match.group(1)
+        end = starts[idx + 1].start() if idx + 1 < len(starts) else min(len(body), match.start() + 15000)
+        card = body[match.start():end]
+        url_match = re.search(r'href="(https://www\.linkedin\.com/jobs/view/[^"?&]+)', card)
+        title_match = re.search(r'base-search-card__title[^>]*>([\s\S]{0,300}?)</h3>', card, flags=re.I)
+        company_match = re.search(r'base-search-card__subtitle[^>]*>[\s\S]{0,400}?<a[^>]*>([\s\S]{0,200}?)</a>', card, flags=re.I)
+        location_match = re.search(r'job-search-card__location[^>]*>([\s\S]{0,200}?)</span>', card, flags=re.I)
+        date_match = re.search(r'<time[^>]*datetime="([^"]+)"', card, flags=re.I)
+        url = html.unescape(url_match.group(1)) if url_match else f"https://www.linkedin.com/jobs/view/{job_id}"
+        jobs.append({
+            "title": clean_text(title_match.group(1)) if title_match else "",
+            "url": url,
+            "job_id": job_id,
+            "company": clean_text(company_match.group(1)) if company_match else "",
+            "location": clean_text(location_match.group(1)) if location_match else "",
+            "posted_date": date_match.group(1) if date_match else "",
+        })
     return jobs
 
 
@@ -517,6 +571,12 @@ def parse_date(value: Any) -> Optional[dt.date]:
             return dt.datetime.strptime(text.replace("Z", "+0000"), fmt).date()
         except Exception:
             pass
+    try:
+        parsed_email_date = email.utils.parsedate_to_datetime(text)
+        if parsed_email_date:
+            return parsed_email_date.date()
+    except Exception:
+        pass
     rel = text.lower()
     if "today" in rel:
         return dt.date.today()
@@ -564,6 +624,20 @@ def extract_json_ld_dates(body: str) -> Tuple[Optional[dt.date], str]:
     return None, dates[0] if dates else ""
 
 
+def extract_jobposting_json_ld(body: str) -> Dict[str, Any]:
+    for match in re.finditer(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', body, flags=re.I | re.S):
+        raw = html.unescape(match.group(1)).strip()
+        try:
+            data = json.loads(raw)
+        except Exception:
+            continue
+        nodes = data if isinstance(data, list) else [data]
+        for node in nodes:
+            if isinstance(node, dict) and node.get("@type") == "JobPosting":
+                return node
+    return {}
+
+
 def extract_title_from_html(body: str) -> str:
     h1 = re.search(r"<h1[^>]*>(.*?)</h1>", body, flags=re.I | re.S)
     if h1:
@@ -588,7 +662,7 @@ def extract_jd_from_html(body: str) -> str:
             text = clean_text(match.group(1))
             if len(text) >= MIN_JD_CHARS:
                 return text
-    return clean_text(body)[:5000]
+    return ""
 
 
 def enrich_from_html_page(ctx: RunContext, raw: RawJob, prefer_curl: bool = False) -> None:
@@ -605,9 +679,11 @@ def enrich_from_html_page(ctx: RunContext, raw: RawJob, prefer_curl: bool = Fals
     if code != 200 or not body:
         return
     title = extract_title_from_html(body)
-    if title and (not raw.title or raw.title.lower() in {"untitled", "job"}):
+    if title and "can't find this page" not in title.lower() and "page not found" not in title.lower():
         raw.title = title
-    posted, posted_raw = extract_json_ld_dates(body)
+    jobposting = extract_jobposting_json_ld(body)
+    posted_raw = str(jobposting.get("datePosted") or "")
+    posted = parse_date(posted_raw) if posted_raw else None
     if posted:
         raw.posted_date = posted
         raw.posted_raw = posted_raw
@@ -618,12 +694,36 @@ def enrich_from_html_page(ctx: RunContext, raw: RawJob, prefer_curl: bool = Fals
             parsed = parse_date(raw.posted_raw)
             if parsed:
                 raw.posted_date = parsed
-    loc_match = re.search(r"Location\s*[:#]?\s*([^|<\n]{2,120})", clean_text(body), flags=re.I)
-    if loc_match and not raw.location:
-        raw.location = clean_text(loc_match.group(1))
-    page_text = html_to_text(body)
-    if page_text:
-        raw.description = " ".join([raw.description, page_text[:12000]]).strip()
+    hiring = jobposting.get("hiringOrganization")
+    if isinstance(hiring, dict) and hiring.get("name"):
+        raw.company = clean_text(str(hiring["name"]))
+    if raw.company in PLATFORM_DOMAINS or raw.company == str(raw.raw.get("source_site") or ""):
+        company_match = re.search(r'"companyName"\s*:\s*"([^"]{2,160})"', body)
+        if company_match:
+            raw.company = clean_text(company_match.group(1))
+    job_location = jobposting.get("jobLocation")
+    if job_location:
+        locations = job_location if isinstance(job_location, list) else [job_location]
+        location_parts: List[str] = []
+        for location in locations:
+            if not isinstance(location, dict):
+                continue
+            address = location.get("address")
+            if isinstance(address, dict):
+                location_parts.append(", ".join(
+                    clean_text(str(address.get(key) or ""))
+                    for key in ("addressLocality", "addressRegion", "addressCountry")
+                    if address.get(key)
+                ))
+        if any(location_parts):
+            raw.location = "; ".join(part for part in location_parts if part)
+    elif str(jobposting.get("jobLocationType") or "").upper() == "TELECOMMUTE":
+        raw.location = raw.location or "Remote"
+    description = str(jobposting.get("description") or "")
+    if description:
+        raw.description = clean_text(description)
+    else:
+        raw.description = extract_jd_from_html(body)
 
 
 def playwright_search_jobs(
@@ -845,9 +945,7 @@ def collect_remoteok_jobs(data: Any, query: str, strict: bool) -> List[JobRow]:
             continue
         title = str(row.get("position") or row.get("title") or "")
         blob = title + " " + str(row.get("tags") or "") + " " + str(row.get("description") or "")
-        if strict and not query_match(blob, query):
-            continue
-        if not strict and not query_match_loose(blob, query):
+        if not query_match_loose(blob, query):
             continue
         jobs.append({
             "title": clean_text(title),
@@ -862,18 +960,32 @@ def collect_remoteok_jobs(data: Any, query: str, strict: bool) -> List[JobRow]:
 
 
 def hn_latest_whos_hiring_id(ctx: RunContext) -> Optional[str]:
-    for query in ("who is hiring right now", "who is hiring"):
-        code, body = http_get(
-            ctx,
-            "https://hn.algolia.com/api/v1/search?" + urllib.parse.urlencode({"query": query, "tags": "story", "hitsPerPage": 20}),
-            accept="application/json,*/*",
-        )
-        data = load_json_body(body)
-        if not isinstance(data, dict):
+    code, body = http_get(
+        ctx,
+        "https://hn.algolia.com/api/v1/search_by_date?" + urllib.parse.urlencode({
+            "query": "who is hiring",
+            "tags": "story",
+            "hitsPerPage": 50,
+        }),
+        accept="application/json,*/*",
+    )
+    data = load_json_body(body)
+    if not isinstance(data, dict):
+        return None
+    cutoff = dt.datetime.now(tz=dt.timezone.utc) - dt.timedelta(days=45)
+    for hit in data.get("hits", []):
+        if not isinstance(hit, dict):
             continue
-        for hit in data.get("hits", []):
-            if isinstance(hit, dict) and "who is hiring" in str(hit.get("title", "")).lower():
-                return str(hit.get("objectID") or "")
+        title = clean_text(str(hit.get("title") or ""))
+        if not re.fullmatch(r"Ask HN: Who is hiring\? \([A-Za-z]+ \d{4}\)", title, flags=re.I):
+            continue
+        created = str(hit.get("created_at") or "")
+        try:
+            created_at = dt.datetime.fromisoformat(created.replace("Z", "+00:00"))
+        except Exception:
+            continue
+        if created_at >= cutoff:
+            return str(hit.get("objectID") or "")
     return None
 
 
@@ -905,17 +1017,29 @@ class LinkedInAdapter(SiteAdapter):
         jobs: List[JobRow] = []
         last_code: Optional[int] = None
         method = "requests"
-        for start in range(0, ctx.limit, 25):
+        empty_pages = 0
+        for start in range(0, max(ctx.limit * 2, 20), 10):
             params = urllib.parse.urlencode({"keywords": query, "location": location, "sortBy": "DD", "start": str(start)})
-            code, body, method = fetch_page(ctx, "https://www.linkedin.com/jobs/search/?" + params, prefer_curl=True)
+            code, body, method = fetch_page(
+                ctx,
+                "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?" + params,
+                prefer_curl=True,
+            )
             last_code = code
             if code != 200:
-                break
+                fallback = "https://www.linkedin.com/jobs/search/?" + params
+                code, body, method = fetch_page(ctx, fallback, prefer_curl=True)
+                last_code = code
+                if code != 200:
+                    break
             batch = parse_linkedin_cards(body)
             if not batch:
-                break
+                empty_pages += 1
+                if empty_pages >= 2:
+                    break
+                continue
             jobs.extend(batch)
-            if len(jobs) >= ctx.limit:
+            if len(unique_rows(jobs, ctx.limit)) >= ctx.limit:
                 break
             time.sleep(REQUEST_DELAY_SECONDS)
         raw_jobs = self.rows_to_raw(ctx, jobs, method, location)
@@ -930,6 +1054,7 @@ class IndeedAdapter(SiteAdapter):
         jobs: List[JobRow] = []
         last_code: Optional[int] = None
         method = "requests"
+        empty_pages = 0
         for start in range(0, ctx.limit, 10):
             params = urllib.parse.urlencode({"q": query, "l": location, "sort": "date", "start": str(start)})
             code, body, method = fetch_page(ctx, "https://www.indeed.com/jobs?" + params, prefer_curl=True)
@@ -938,9 +1063,12 @@ class IndeedAdapter(SiteAdapter):
                 break
             batch = parse_indeed_cards(body)
             if not batch:
-                break
+                empty_pages += 1
+                if empty_pages >= 2:
+                    break
+                continue
             jobs.extend(batch)
-            if len(jobs) >= ctx.limit:
+            if len(unique_rows(jobs, ctx.limit)) >= ctx.limit:
                 break
             time.sleep(REQUEST_DELAY_SECONDS)
         raw_jobs = self.rows_to_raw(ctx, jobs, method, location)
@@ -965,8 +1093,8 @@ class DiceAdapter(SiteAdapter):
                 break
             batch: List[JobRow] = []
             for url in re.findall(r'data-testid="job-search-job-detail-link"[^>]*href="([^"]+)"', body):
-                slug = url.rstrip("/").split("/")[-1]
-                batch.append({"title": clean_text(slug.replace("-", " ")), "url": url})
+                job_id = url.rstrip("/").split("/")[-1]
+                batch.append({"title": "", "url": url, "job_id": job_id})
             for url in re.findall(r'href="(https://www\.dice\.com/job-detail/[^"]+)"', body):
                 batch.append({"title": "", "url": url})
             if not batch:
@@ -984,13 +1112,23 @@ class BuiltInAdapter(SiteAdapter):
     prefer_curl = True
 
     def fetch(self, ctx: RunContext, query: str, location: str) -> AdapterResult:
-        params = urllib.parse.urlencode({"search": query})
-        code, body, method = fetch_page(ctx, "https://builtin.com/jobs?" + params, prefer_curl=True)
         jobs: List[JobRow] = []
-        for path in re.findall(r'(/job/[a-z0-9-]+/\d+)', body):
-            slug = path.split("/")[2].replace("-", " ").title()
-            jobs.append({"title": slug, "url": absolute(path, "https://builtin.com"), "location": location})
-        raw_jobs = self.rows_to_raw(ctx, jobs, method, location)
+        code: Optional[int] = None
+        method = "requests"
+        for page in range(1, max(2, (ctx.limit + 24) // 25 + 1)):
+            params = urllib.parse.urlencode({"search": query, "page": str(page)})
+            code, body, method = fetch_page(ctx, "https://builtin.com/jobs?" + params, prefer_curl=True)
+            if code != 200:
+                break
+            batch = []
+            for path in re.findall(r'(/job/[a-z0-9-]+/\d+)', body):
+                slug = path.split("/")[2].replace("-", " ").title()
+                batch.append({"title": slug, "url": absolute(path, "https://builtin.com")})
+            before = len(unique_rows(jobs, ctx.limit))
+            jobs.extend(batch)
+            if not batch or len(unique_rows(jobs, ctx.limit)) == before or len(unique_rows(jobs, ctx.limit)) >= ctx.limit:
+                break
+        raw_jobs = self.rows_to_raw(ctx, jobs, method, "")
         return AdapterResult(adapter_health(self.site_name, method, code, raw_jobs), raw_jobs)
 
 
@@ -999,14 +1137,24 @@ class SimplyHiredAdapter(SiteAdapter):
     prefer_curl = True
 
     def fetch(self, ctx: RunContext, query: str, location: str) -> AdapterResult:
-        params = urllib.parse.urlencode({"q": query, "l": location, "sb": "dd"})
-        code, body, method = fetch_page(ctx, "https://www.simplyhired.com/search?" + params, prefer_curl=True)
         jobs: List[JobRow] = []
-        for match in re.finditer(r'href="(/job/[^"]+)"[^>]*>([^<]{3,120})</a>', body, flags=re.I):
-            jobs.append({"title": clean_text(match.group(2)), "url": absolute(match.group(1), "https://www.simplyhired.com"), "location": location})
-        if not jobs:
-            for path in re.findall(r'(/job/[a-z0-9-]+)', body):
-                jobs.append({"title": "", "url": absolute(path, "https://www.simplyhired.com"), "location": location})
+        code: Optional[int] = None
+        method = "requests"
+        for page in range(1, max(2, (ctx.limit + 19) // 20 + 1)):
+            params = urllib.parse.urlencode({"q": query, "l": location, "sb": "dd", "pn": str(page)})
+            code, body, method = fetch_page(ctx, "https://www.simplyhired.com/search?" + params, prefer_curl=True)
+            if code != 200:
+                break
+            batch: List[JobRow] = []
+            for match in re.finditer(r'href="(/job/[^"]+)"[^>]*>([^<]{3,160})</a>', body, flags=re.I):
+                batch.append({"title": clean_text(match.group(2)), "url": absolute(match.group(1), "https://www.simplyhired.com")})
+            if not batch:
+                for path in re.findall(r'(/job/[a-z0-9-]+)', body):
+                    batch.append({"title": "", "url": absolute(path, "https://www.simplyhired.com")})
+            before = len(unique_rows(jobs, ctx.limit))
+            jobs.extend(batch)
+            if not batch or len(unique_rows(jobs, ctx.limit)) == before or len(unique_rows(jobs, ctx.limit)) >= ctx.limit:
+                break
         raw_jobs = self.rows_to_raw(ctx, jobs, method, location)
         return AdapterResult(adapter_health(self.site_name, method, code, raw_jobs), raw_jobs)
 
@@ -1019,8 +1167,6 @@ class RemoteOKAdapter(SiteAdapter):
         code, body = http_get(ctx, "https://remoteok.com/api", accept="application/json,*/*")
         data = load_json_body(body)
         jobs = collect_remoteok_jobs(data, query, strict=True)
-        if not jobs:
-            jobs = collect_remoteok_jobs(data, query, strict=False)
         raw_jobs = self.rows_to_raw(ctx, jobs, "requests", location)
         return AdapterResult(adapter_health(self.site_name, "requests", code, raw_jobs), raw_jobs)
 
@@ -1043,9 +1189,24 @@ class WeWorkRemotelyAdapter(SiteAdapter):
                     title = clean_text(item.findtext("title") or "")
                     link = clean_text(item.findtext("link") or "")
                     desc = clean_text(item.findtext("description") or "")
+                    posted = clean_text(item.findtext("pubDate") or "")
                     if not link or not query_match_loose(title + " " + desc, query):
                         continue
-                    jobs.append({"title": title, "url": link, "description": desc, "location": "Remote"})
+                    company, role = ("", title)
+                    if ":" in title:
+                        company, role = [clean_text(part) for part in title.split(":", 1)]
+                    location_match = re.search(
+                        r"\b(?:based in|remote[- ]?from|location[: ]+)\s*([^.;|]{2,100})",
+                        title + " " + desc, flags=re.I,
+                    )
+                    jobs.append({
+                        "title": role,
+                        "url": link,
+                        "description": desc,
+                        "company": company,
+                        "location": clean_text(location_match.group(1)) if location_match else "Remote",
+                        "posted_date": posted,
+                    })
             except ET.ParseError:
                 pass
         raw_jobs = self.rows_to_raw(ctx, jobs, "requests", location)
@@ -1099,17 +1260,35 @@ class HNWhosHiringAdapter(SiteAdapter):
                 continue
             if not is_us_text(text) and "remote" not in text.lower():
                 continue
-            title_match = re.search(
-                r"([A-Za-z0-9][^\n|]{8,100}(?:Engineer|Developer|Software|Firmware|Embedded)[^\n|]{0,40})",
-                text, flags=re.I,
-            )
-            title = clean_text(title_match.group(1)) if title_match else clean_text(text.split("|")[0].split("\n")[0])[:80]
+            segments = [clean_text(segment) for segment in text.split("|") if clean_text(segment)]
+            company = segments[0][:120] if segments else ""
+            title = ""
+            for segment in segments[1:6]:
+                if len(segment) <= 180 and re.search(
+                    r"\b(engineer|developer|software|firmware|embedded|kernel)\b", segment, flags=re.I,
+                ):
+                    title = segment
+                    break
+            if not title:
+                title_match = re.search(
+                    r"([A-Za-z0-9][^|]{0,80}(?:Engineer|Developer|Software|Firmware|Embedded)[^|]{0,60})",
+                    text, flags=re.I,
+                )
+                title = clean_text(title_match.group(1)) if title_match else ""
+            title = title[:180].strip(" ,;:-")
+            if not title:
+                continue
             jobs.append({
                 "title": title,
                 "url": f"https://news.ycombinator.com/item?id={kid}",
                 "description": text,
                 "job_id": str(kid),
-                "location": location,
+                "company": company,
+                "location": "Remote" if "remote" in text.lower() else location,
+                "posted_date": dt.datetime.fromtimestamp(
+                    float(comment.get("time") or story.get("time") or 0),
+                    tz=dt.timezone.utc,
+                ).date().isoformat() if (comment.get("time") or story.get("time")) else "",
             })
             if len(jobs) >= ctx.limit:
                 break
@@ -1143,16 +1322,36 @@ class ZipRecruiterAdapter(SiteAdapter):
     prefer_curl = True
 
     def fetch(self, ctx: RunContext, query: str, location: str) -> AdapterResult:
-        params = urllib.parse.urlencode({"search": query, "location": location})
-        code, body, method = fetch_page(ctx, "https://www.ziprecruiter.com/jobs-search?" + params, prefer_curl=True)
         jobs: List[JobRow] = []
-        names = re.findall(r'"name":"([^"]{5,120})"', body)
-        urls = re.findall(r'"url":"(https://www\.ziprecruiter\.com/c/[^"]+)"', body)
-        for title, url in zip(names, urls):
-            jobs.append({"title": clean_text(title), "url": html.unescape(url), "location": location})
-        if not jobs:
-            for match in re.finditer(r'href="(https://www\.ziprecruiter\.com/[^"]+)"[^>]*>([^<]{3,120})</a>', body, flags=re.I):
-                jobs.append({"title": clean_text(match.group(2)), "url": match.group(1), "location": location})
+        code: Optional[int] = None
+        method = "requests"
+        for page in range(1, max(2, (ctx.limit + 19) // 20 + 1)):
+            params = urllib.parse.urlencode({"search": query, "location": location, "page": str(page)})
+            code, body, method = fetch_page(ctx, "https://www.ziprecruiter.com/jobs-search?" + params, prefer_curl=True)
+            if code != 200:
+                break
+            batch: List[JobRow] = []
+            for match in re.finditer(
+                r'\{[^{}]{0,1200}?"name":"([^"]{5,160})"[^{}]{0,1200}?"url":"(https://www\.ziprecruiter\.com/c/[^"]+)"[^{}]{0,1200}?\}',
+                body,
+            ):
+                url = html.unescape(match.group(2))
+                path = urllib.parse.urlparse(url).path
+                company_match = re.search(r"/c/([^/]+)/Job/", path)
+                location_match = re.search(r"/-in-([^/?]+)", path)
+                batch.append({
+                    "title": clean_text(match.group(1)),
+                    "url": url,
+                    "company": clean_text(urllib.parse.unquote(company_match.group(1)).replace("-", " ")) if company_match else "",
+                    "location": clean_text(urllib.parse.unquote(location_match.group(1)).replace(",", ", ")) if location_match else "",
+                })
+            if not batch:
+                for match in re.finditer(r'href="(https://www\.ziprecruiter\.com/[^"]+)"[^>]*>([^<]{3,160})</a>', body, flags=re.I):
+                    batch.append({"title": clean_text(match.group(2)), "url": match.group(1)})
+            before = len(unique_rows(jobs, ctx.limit))
+            jobs.extend(batch)
+            if not batch or len(unique_rows(jobs, ctx.limit)) == before or len(unique_rows(jobs, ctx.limit)) >= ctx.limit:
+                break
         raw_jobs = self.rows_to_raw(ctx, jobs, method, location)
         return AdapterResult(adapter_health(self.site_name, method, code, raw_jobs), raw_jobs)
 
@@ -1360,14 +1559,37 @@ INLINE_DESCRIPTION_SITES = {"RemoteOK", "We Work Remotely", "Remotive", "Hacker 
 
 
 def enrich_shortlisted(raw_jobs: Sequence[RawJob], ctx: RunContext) -> None:
+    candidates: List[Tuple[RawJob, bool]] = []
     for raw in raw_jobs:
         site = str(raw.raw.get("source_site") or "")
         if site in INLINE_DESCRIPTION_SITES:
             continue
+        if date_status(raw, ctx) == DATE_OLD:
+            continue
+        title = raw.title.lower()
+        if title and not any(term in title for term in (
+            "software", "firmware", "embedded", "kernel", "driver", "linux",
+            "system", "platform", "connectivity", "network", "autonomy",
+            "rtos", "bios", "uefi", "bootloader",
+        )):
+            continue
         if len(clean_text(raw.description)) >= MIN_JD_CHARS:
             continue
         prefer_curl = site in {"LinkedIn", "Indeed", "Dice", "Built In", "SimplyHired", "Glassdoor", "ZipRecruiter", "Wellfound", "Monster", "Otta"}
-        enrich_from_html_page(ctx, raw, prefer_curl=prefer_curl)
+        candidates.append((raw, prefer_curl))
+    if not candidates:
+        return
+    worker_count = min(6, len(candidates))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=worker_count) as pool:
+        futures = [
+            pool.submit(enrich_from_html_page, ctx, raw, prefer_curl)
+            for raw, prefer_curl in candidates
+        ]
+        for future in futures:
+            try:
+                future.result()
+            except Exception:
+                continue
 
 
 def load_context() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
@@ -1420,9 +1642,28 @@ def add_seen(raw: RawJob, run_seen: set[str]) -> None:
 
 def location_ok(raw: RawJob) -> bool:
     site = str(raw.raw.get("source_site") or "")
-    if site in {"RemoteOK", "We Work Remotely", "Remotive"}:
-        return True
     text = lower_text(raw.location, raw.url, raw.description)
+    if site in {"RemoteOK", "We Work Remotely", "Remotive"}:
+        location_text = lower_text(raw.location, raw.title)
+        allowed_remote = (
+            "united states", "usa", "u.s.", "remote - us", "remote us",
+            "north america", "americas", "worldwide", "anywhere", "global",
+        )
+        foreign_only = (
+            "brazil", "poland", "india", "canada", "mexico", "argentina",
+            "europe", "emea", "latam", "latin america", "united kingdom",
+            "uk only", "germany", "france", "spain", "portugal", "israel",
+        )
+        if any(signal in location_text for signal in allowed_remote):
+            return True
+        if any(signal in location_text for signal in foreign_only):
+            return False
+        description_location = lower_text(raw.description[:2500])
+        if any(signal in description_location for signal in foreign_only) and not any(
+            signal in description_location for signal in allowed_remote
+        ):
+            return False
+        return location_text.strip() in {"", "remote"}
     if not text:
         return site not in {"", "LinkedIn", "Indeed"}
     if re.search(r"\bus,\s*[a-z]", text):
@@ -1448,8 +1689,35 @@ def location_ok(raw: RawJob) -> bool:
     return any(signal in text for signal in us_signals)
 
 
+SENIOR_TITLE_PATTERNS = (
+    r"\bprincipal\b",
+    r"\bstaff\b",
+    r"\blead\b",
+    r"\barchitect\b",
+    r"\bdistinguished\b",
+    r"\bfellow\b",
+    r"\bmanager\b",
+    r"\bdirector\b",
+    r"\bhead of\b",
+    r"\bvp\b",
+    r"\bv\.?p\.?\b",
+    r"\bvice president\b",
+)
+
+
+def is_new_grad_title(title: str) -> bool:
+    return bool(re.search(r"\bgrad\b", title or "", flags=re.I))
+
+
+def title_exceeds_experience_level(title: str) -> bool:
+    if is_new_grad_title(title):
+        return False
+    return any(re.search(p, title or "", flags=re.I) for p in SENIOR_TITLE_PATTERNS)
+
+
 def hard_reject_reasons(raw: RawJob, ctx: RunContext) -> List[str]:
-    text = lower_text(raw.title, raw.location, raw.work_mode, raw.employment_type, raw.description)
+    title_text = lower_text(raw.title, raw.employment_type)
+    policy_text = lower_text(raw.title, raw.location, raw.work_mode, raw.employment_type, raw.description)
     reasons: List[str] = []
     site = str(raw.raw.get("source_site") or raw.company or "")
     if not raw.url:
@@ -1460,9 +1728,14 @@ def hard_reject_reasons(raw: RawJob, ctx: RunContext) -> List[str]:
         reasons.append("location_mismatch")
     if date_status(raw, ctx) == DATE_OLD:
         reasons.append("old_posting")
-    reject_patterns = {
+    title_reject_patterns = {
         "internship": [r"\bintern(ship)?\b"],
         "part_time": [r"\bpart[- ]time\b", r"\bseasonal\b"],
+    }
+    for reason, patterns in title_reject_patterns.items():
+        if any(re.search(pattern, title_text, flags=re.I) for pattern in patterns):
+            reasons.append(reason)
+    policy_reject_patterns = {
         "citizenship_required": [
             r"must be (a )?(u\.?s\.?|us) citizen", r"(u\.?s\.?|us) citizen required",
             r"citizenship required", r"(u\.?s\.?|us) person required",
@@ -1473,16 +1746,19 @@ def hard_reject_reasons(raw: RawJob, ctx: RunContext) -> List[str]:
             r"not eligible .*sponsorship", r"must not require sponsorship",
         ],
     }
-    for reason, patterns in reject_patterns.items():
-        if any(re.search(p, text, flags=re.I) for p in patterns):
+    for reason, patterns in policy_reject_patterns.items():
+        if any(re.search(pattern, policy_text, flags=re.I) for pattern in patterns):
             reasons.append(reason)
     role_bad = [
         "product manager", "program manager", "technical program manager", "tpm", "director",
         "sales", "recruiter", "legal", "facilities", "financial analyst", "technician",
         "manufacturing", "supply chain", "sdet", "engineer in test",
     ]
-    if any(bad in text for bad in role_bad):
+    if any(bad in title_text for bad in role_bad):
         reasons.append("non_target_role_family")
+    if title_exceeds_experience_level(raw.title):
+        reasons.append("experience_level_high")
+
     return sorted(set(reasons))
 
 
@@ -1510,13 +1786,29 @@ def term_in_text(term: str, text: str) -> bool:
 def weak_role_match(raw: RawJob, profile: Dict[str, Any]) -> bool:
     hits = term_hits(raw, profile)
     title_text = raw.title.lower()
-    strong_title = any(
+    target_title = any(
         term in title_text
-        for term in ("firmware", "embedded", "kernel", "driver", "systems software", "linux", "operating system")
+        for term in (
+            "firmware", "embedded", "kernel", "device driver", "driver",
+            "systems software", "system software", "platform software",
+            "operating system", "linux", "network software",
+            "connectivity software", "autonomy software", "bootloader",
+            "uefi", "bios", "openbmc", "bmc",
+        )
     )
-    if strong_title and hits:
+    if target_title and hits:
         return False
-    return len(hits) < 3
+    generic_software_title = bool(re.search(r"\bsoftware (?:development )?engineer\b", title_text))
+    core_text = lower_text(raw.description)
+    core_terms = (
+        "firmware", "embedded linux", "linux kernel", "kernel module",
+        "device driver", "rtos", "bootloader", "u-boot", "device tree",
+        "uefi", "bios", "openbmc", "bare metal",
+    )
+    core_hits = sum(1 for term in core_terms if term in core_text)
+    if generic_software_title and core_hits >= 2:
+        return False
+    return True
 
 
 def concerns_for(raw: RawJob, ctx: RunContext) -> List[str]:
@@ -1570,6 +1862,7 @@ def classify_jobs(
     run_seen: set[str] = set()
     for raw in raw_jobs:
         if is_duplicate(raw, existing, run_seen):
+            raw.raw["reject_reasons"] = ["duplicate_ledger"]
             rejected["duplicate_ledger"] += 1
             duplicate_count += 1
             continue
@@ -1578,13 +1871,16 @@ def classify_jobs(
         if not reasons and weak_role_match(raw, profile):
             reasons.append("weak_role_match")
         if reasons:
+            raw.raw["reject_reasons"] = sorted(set(reasons))
             for reason in reasons:
                 rejected[reason] += 1
             continue
         score, reason = score_job(raw, profile, ctx)
         if score < 70:
+            raw.raw["reject_reasons"] = ["low_score"]
             rejected["low_score"] += 1
             continue
+        raw.raw["reject_reasons"] = []
         accepted.append(
             Job(
                 company=raw.company,
@@ -1688,11 +1984,11 @@ def run_search(args: argparse.Namespace) -> int:
         days = int(prefs.get("job_search_preferences", {}).get("job_posting_age_days") or DEFAULT_DAYS)
     ctx = RunContext(limit=args.limit, days=days, verbose=args.verbose)
     existing = ledger_index(ledger)
-    query = pick_query(args.query)
+    queries = pick_queries(args.query)
     location = DEFAULT_LOCATION
     selected = parse_sites_flag(args.sites)
 
-    print(f"General job search: query={query!r}, limit={ctx.limit}, days={ctx.days}, cutoff={ctx.cutoff.isoformat()}")
+    print(f"General job search: queries={queries!r}, limit={ctx.limit}, days={ctx.days}, cutoff={ctx.cutoff.isoformat()}")
     print("Site adapters. Dry-run unless --append is set.")
 
     healths: List[Health] = []
@@ -1702,14 +1998,36 @@ def run_search(args: argparse.Namespace) -> int:
             continue
         if args.verbose:
             print(f"Fetching {adapter.site_name}...")
-        try:
-            result = adapter.fetch(ctx, query, location)
-        except Exception as exc:
-            result = AdapterResult(Health(adapter.site_name, adapter.method, "failed", 0, note=str(exc)[:40]), [])
-        healths.append(result.health)
-        all_raw.extend(result.raw_jobs)
+        query_batches: List[List[RawJob]] = []
+        site_healths: List[Health] = []
+        for query in queries:
+            try:
+                result = adapter.fetch(ctx, query, location)
+            except Exception as exc:
+                result = AdapterResult(Health(adapter.site_name, adapter.method, "failed", 0, note=str(exc)[:40]), [])
+            site_healths.append(result.health)
+            query_batches.append(result.raw_jobs)
+            if (
+                adapter.site_name in {"Wellfound", "Monster", "Otta"}
+                and not result.raw_jobs
+                and result.health.status != "ok"
+            ):
+                break
+        site_raw = round_robin_raw_batches(query_batches, ctx.limit * len(queries))
+        successful = [health for health in site_healths if health.status == "ok"]
+        if successful:
+            healths.append(Health(
+                adapter.site_name,
+                successful[0].method,
+                "ok",
+                len(site_raw),
+                note=f"{len(queries)} queries",
+            ))
+        else:
+            healths.append(site_healths[-1] if site_healths else Health(adapter.site_name, adapter.method, "failed", 0))
+        all_raw.extend(site_raw)
         if args.verbose:
-            print(f"  {result.health.company}: {result.health.status}, raw={len(result.raw_jobs)}")
+            print(f"  {adapter.site_name}: {healths[-1].status}, unique raw={len(site_raw)}")
 
     enrich_shortlisted(all_raw, ctx)
     accepted, rejected, duplicate_count = classify_jobs(all_raw, profile, ctx, existing)
@@ -1726,6 +2044,17 @@ def run_search(args: argparse.Namespace) -> int:
     else:
         print("None")
     print(f"\nRaw jobs: {len(all_raw)} | Accepted: {len(accepted)} | Duplicates skipped: {duplicate_count}")
+    if args.verbose:
+        rejected_rows = [raw for raw in all_raw if raw.raw.get("reject_reasons")]
+        print("\nRejected job details")
+        if not rejected_rows:
+            print("None")
+        for raw in rejected_rows[:40]:
+            reasons = ", ".join(str(reason) for reason in raw.raw.get("reject_reasons", []))
+            print(f"- {raw.raw.get('source_site', raw.company)} | {raw.title or 'Untitled'} | {reasons}")
+            print(f"  {raw.url}")
+        if len(rejected_rows) > 40:
+            print(f"... {len(rejected_rows) - 40} more rejected rows")
     if args.append:
         append_jobs(accepted)
     else:
@@ -1742,13 +2071,32 @@ def run_self_tests() -> int:
 
     check("parse date iso", parse_date("2026-06-19") == dt.date(2026, 6, 19))
     check("parse date month", parse_date("June 18, 2026") == dt.date(2026, 6, 18))
-    check("indeed cards", len(parse_indeed_cards('data-jk="abc123" <span title="Firmware Engineer">')) >= 1)
-    check("linkedin cards", len(parse_linkedin_cards('base-search-card__title>Firmware Eng</a> https://www.linkedin.com/jobs/view/123')) >= 1)
+    indeed_fixture = (
+        'data-jk="0123456789abcdef"><h2 class="jobTitle">'
+        '<span title="Firmware Engineer">Firmware Engineer</span>'
+    )
+    linkedin_fixture = (
+        'data-entity-urn="urn:li:jobPosting:1234567890">'
+        '<a href="https://www.linkedin.com/jobs/view/firmware-engineer-1234567890">'
+        '<h3 class="base-search-card__title">Firmware Engineer</h3>'
+        '<h4 class="base-search-card__subtitle"><a>Acme</a></h4>'
+        '<span class="job-search-card__location">Austin, TX</span>'
+    )
+    check("indeed cards", parse_indeed_cards(indeed_fixture)[0]["title"] == "Firmware Engineer")
+    check("linkedin cards", parse_linkedin_cards(linkedin_fixture)[0]["job_id"] == "1234567890")
+    check("linkedin title pairing", parse_linkedin_cards(
+        linkedin_fixture + linkedin_fixture.replace("1234567890", "9876543210").replace("Firmware Engineer", "Kernel Engineer")
+    )[1]["title"] == "Kernel Engineer")
     check("us text ca", is_us_text("San Francisco, CA"))
     check("platform url indeed", is_platform_url("https://www.indeed.com/viewjob?jk=abc", "Indeed"))
     check("platform url reject", not is_platform_url("https://evil.com/job", "Indeed"))
-    check("query rotation", pick_query(None) in PROFILE_QUERIES)
+    check("legacy single query picker", pick_query(None) in PROFILE_QUERIES)
+    check("default all queries", pick_queries(None) == PROFILE_QUERIES)
     check("explicit query", pick_query("custom query") == "custom query")
+    check("loose query rejects people ops", not query_match_loose(
+        "Manager of People Operations for a software company", "embedded software engineer"))
+    check("loose query accepts embedded", query_match_loose(
+        "Embedded C++ developer working on an RTOS", "embedded software engineer"))
     check("sites all", parse_sites_flag("all") is None)
     check("sites filter", "Indeed" in (parse_sites_flag("indeed,remoteok") or set()))
     check("build adapters", len(build_site_adapters()) == 14)
@@ -1771,12 +2119,31 @@ def run_self_tests() -> int:
     no_sponsor = dataclasses.replace(good, description="This role will not sponsor visas.")
     check("good role not weak", not weak_role_match(good, profile))
     check("bad role weak", weak_role_match(bad, profile))
+    check("hardware title weak", weak_role_match(dataclasses.replace(
+        good, title="Senior Hardware Engineer", description="firmware FPGA I2C systems"), profile))
+    check("generic software with core stack", not weak_role_match(dataclasses.replace(
+        good, title="Software Engineer", description="Linux kernel device driver firmware development"), profile))
     check("no sponsorship reject", "no_sponsorship" in hard_reject_reasons(no_sponsor, ctx))
+    check("grad bypass staff title", not title_exceeds_experience_level("New Grad Staff Engineer"))
+    check("staff title filtered", title_exceeds_experience_level("Staff Firmware Engineer"))
+    check("experience level reject", "experience_level_high" in hard_reject_reasons(
+        dataclasses.replace(good, title="Principal Firmware Engineer"), ctx))
+    check("grad bypass not rejected", "experience_level_high" not in hard_reject_reasons(
+        dataclasses.replace(good, title="New Grad Software Engineer"), ctx))
+
     check("non platform reject", "non_platform_source" in hard_reject_reasons(
         dataclasses.replace(good, url="https://evil.com/x", raw={"source_site": "Indeed"}), ctx))
     check("external ok remoteok", "non_platform_source" not in hard_reject_reasons(
         dataclasses.replace(good, url="https://careers.example.com/job", raw={"source_site": "RemoteOK"}), ctx))
     check("date hidden", date_status(dataclasses.replace(good, posted_date=None), ctx) == DATE_HIDDEN)
+    check("foreign remote rejected", not location_ok(dataclasses.replace(
+        good, location="Brazil", raw={"source_site": "Remotive"})))
+    check("worldwide remote accepted", location_ok(dataclasses.replace(
+        good, location="Worldwide", raw={"source_site": "Remotive"})))
+    check("footer intern does not reject", "internship" not in hard_reject_reasons(dataclasses.replace(
+        good, description="Related searches include Hardware Intern jobs."), ctx))
+    check("footer part time does not reject", "part_time" not in hard_reject_reasons(dataclasses.replace(
+        good, description="Career guide: how to find part-time work."), ctx))
 
     existing = {"https://www.indeed.com/viewjob?jk=abc123"}
     dup = dataclasses.replace(good, url="https://www.indeed.com/viewjob?jk=abc123")
@@ -1808,9 +2175,9 @@ def run_self_tests() -> int:
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="General job-site search automation.")
     parser.add_argument("--append", action="store_true", help="Append accepted jobs to jobsearchdocs/jobs_found.md")
-    parser.add_argument("--limit", type=int, default=DEFAULT_LIMIT, help="Max raw results per site (default 50)")
+    parser.add_argument("--limit", type=int, default=DEFAULT_LIMIT, help="Max raw results per site and query (default 50)")
     parser.add_argument("--days", type=int, default=None, help="Freshness window (default from preferences or 3)")
-    parser.add_argument("--query", type=str, default=None, help="Search query (default: rotate PROFILE_QUERIES)")
+    parser.add_argument("--query", type=str, default=None, help="Run one search query (default: run all PROFILE_QUERIES)")
     parser.add_argument("--sites", type=str, default="all", help="Comma-separated site slugs or 'all'")
     parser.add_argument("--self-test", action="store_true", help="Run internal tests and exit")
     parser.add_argument("--verbose", action="store_true", help="Print adapter progress")
@@ -1828,4 +2195,3 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

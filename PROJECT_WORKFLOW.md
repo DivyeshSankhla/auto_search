@@ -190,12 +190,12 @@ python3 jobsearch_partN.py --verbose          # per-adapter progress
 | Target | 10 employers | 14 platforms |
 | Fetch | Full company job list | Keyword search + pagination |
 | URL trust | `is_official_url(company, url)` | `is_platform_url(url, site)` |
-| Query | Implicit (all company jobs) | Rotating profile queries or `--query` |
+| Query | Implicit (all company jobs) | All profile queries or one `--query` override |
 | HTTP | Mostly stdlib `urllib` | `curl_cffi` for most HTML sites |
 
-### 6.1 Query rotation
+### 6.1 Query coverage
 
-When `--query` is omitted, one of these is chosen per calendar day:
+When `--query` is omitted, all four searches run and their results are deduplicated:
 
 ```text
 embedded software engineer
@@ -203,6 +203,8 @@ firmware engineer
 systems software engineer
 linux kernel engineer
 ```
+
+`--limit` applies to each site/query pair. Use `--query` to run only one phrase.
 
 ### 6.2 CLI
 

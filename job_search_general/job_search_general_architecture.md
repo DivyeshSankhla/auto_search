@@ -40,16 +40,16 @@ python3 job_search_general.py --verbose
 | Flag | Purpose |
 |---|---|
 | `--sites` | Comma-separated slugs (`indeed`, `linkedin`, `remoteok`, `wwr`, `hn`, …) or `all` |
-| `--query` | Override search query; default rotates `PROFILE_QUERIES` by day |
+| `--query` | Run one search query; default runs all `PROFILE_QUERIES` |
 | `--days` | Posting freshness window (default from preferences JSON or 3) |
-| `--limit` | Max raw rows per site (default 50) |
+| `--limit` | Max raw rows per site/query pair (default 50) |
 | `--append` | Write accepted jobs to `jobs_found.md` after final dedupe |
 | `--self-test` | Offline mock checks (no network) |
 | `--verbose` | Per-adapter progress |
 
-## Query Rotation
+## Query Coverage
 
-When `--query` is omitted, one query is chosen per run:
+When `--query` is omitted, all profile queries are run:
 
 ```text
 embedded software engineer
@@ -58,7 +58,7 @@ systems software engineer
 linux kernel engineer
 ```
 
-Selection: `PROFILE_QUERIES[date.toordinal() % len(PROFILE_QUERIES)]`
+Results are deduplicated across queries. `--limit` applies per site/query pair.
 
 ## Site Adapters (14)
 
@@ -102,7 +102,7 @@ class SiteAdapter:
 ```text
 for each selected SiteAdapter:
     fetch(ctx, query, location) -> raw jobs
-enrich_from_html_page on rows with short descriptions
+enrich_from_html_page on relevant, non-old rows with short descriptions
     (skip inline-description sites: RemoteOK, WWR, Remotive, HN)
 classify_jobs:
     dedupe vs jobs_found.md
@@ -125,3 +125,11 @@ dry-run report OR --append
 | Phase C | `playwright` + chromium | Wellfound, Monster, Otta (fallback path) |
 
 Phase C adapters log `skipped` / `blocked` health and return empty results rather than crashing when optional deps are missing.
+
+## Extraction safeguards
+
+- Parse each search-result card as one scoped title/URL/company/location record.
+- Replace provisional search fields with detail-page `JobPosting` data where available.
+- Apply hard filters to the actual job description, excluding page navigation and related jobs.
+- Enforce US-compatible geography for remote feeds.
+- Select the current monthly Hacker News “Who is hiring?” thread.
